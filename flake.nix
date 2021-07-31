@@ -4,7 +4,12 @@
     nixos-hardware = { url = "github:nixos/nixos-hardware"; };
   };
 
-  outputs = { self, nixpkgs, nixos-hardware }: {
+  outputs =
+    { self
+    , nixpkgs
+    , nixos-hardware
+    , ...
+    } @ inputs: {
 
     nixosConfigurations = let
       modulesCommon = [
@@ -33,6 +38,7 @@
             hardware.bluetooth.enable = true;
           })
         ];
+        specialArgs = { inherit inputs; };
       };
     };
   };
