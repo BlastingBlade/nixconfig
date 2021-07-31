@@ -1,7 +1,10 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.05";
+  inputs = {
+    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-21.05"; };
+    nixos-hardware = { url = "github:nixos/nixos-hardware"; };
+  };
 
-  outputs = { self, nixpkgs }: {
+  outputs = { self, nixpkgs, nixos-hardware }: {
 
     nixosConfigurations = let
       modulesCommon = [
@@ -34,6 +37,8 @@
         system = "x86_64-linux";
         modules = modulesCommon ++ [
           ./hosts/oldbook.nix
+          nixos-hardware.nixosModules.common-gpu-nvidia-disable
+          nixos-hardware.nixosModules.dell-latitude-3480
           ({ pkgs, ... }: {
             hardware.opengl.enable = true;
             hardware.bluetooth.enable = true;
