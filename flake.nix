@@ -33,8 +33,10 @@
       oldbook = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = modulesCommon ++ [
+          ./hosts/oldbook.nix
           ({ pkgs, ... }: {
-            boot.isContainer = true;
+            hardware.opengl.enable = true;
+            hardware.bluetooth.enable = true;
           })
         ];
         specialArgs = { inherit inputs; };
