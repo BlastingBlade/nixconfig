@@ -37,6 +37,7 @@
           modules = modulesCommon ++ [
             ./hosts/desktop.nix
             ./hosts/oldbook.nix
+            ./bits/emacs.nix
             nixos-hardware.nixosModules.common-gpu-nvidia-disable
             nixos-hardware.nixosModules.dell-latitude-3480
             ({ pkgs, ... }: {
