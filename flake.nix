@@ -3,12 +3,9 @@
 
   outputs = { self, nixpkgs }: {
 
-    nixosConfigurations.oldbook = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
+    nixosConfigurations = let
+      modulesCommon = [
         ({ pkgs, ... }: {
-          boot.isContainer = true;
-
           # Let 'nixos-version --json' know about the Git revision of this flake.
           system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
 
@@ -18,6 +15,15 @@
           '';
         })
       ];
+    in {
+      oldbook = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = modulesCommon ++ [
+          ({ pkgs, ... }: {
+            boot.isContainer = true;
+          })
+        ];
+      };
     };
   };
 }
