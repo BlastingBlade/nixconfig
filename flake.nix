@@ -18,24 +18,13 @@
             experimental-features = nix-command flakes
           '';
         })
-        # Base Packages
-        ({ pkgs, ... }: {
-          time.timeZone = "America/New_York";
-          environment.systemPackages = with pkgs; [
-            vim
-            git
-            nix-index
-          ];
-          environment.variables = {
-            EDITOR = "vim";
-            VISUAL = "vim";
-          };
-        })
+        ./hosts/common.nix
       ];
     in {
       oldbook = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = modulesCommon ++ [
+          ./hosts/desktop.nix
           ./hosts/oldbook.nix
           nixos-hardware.nixosModules.common-gpu-nvidia-disable
           nixos-hardware.nixosModules.dell-latitude-3480
