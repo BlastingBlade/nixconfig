@@ -2,15 +2,20 @@
   inputs = {
     nixpkgs = { url = "github:NixOS/nixpkgs/nixos-21.05"; };
     nixos-hardware = { url = "github:nixos/nixos-hardware"; };
+    emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
   };
 
   outputs =
     { self
     , nixpkgs
     , nixos-hardware
+    , emacs-overlay
     , ...
     } @ inputs: {
 
+      overlays = {
+        emacs = emacs-overlay.overlay;
+      };
 
       nixosConfigurations = let
         modulesCommon = [

@@ -6,6 +6,10 @@
     libsecret
     gnome.libsecret
     brightnessctl
+
+    ((emacsPackagesNgGen emacsPgtkGcc).emacsWithPackages (epkgs: [
+      epkgs.vterm
+    ]))
   ];
 
   users.users.blasting.extraGroups = [
