@@ -39,7 +39,6 @@
             hardware.bluetooth.enable = true;
           })
         ];
-        specialArgs = { inherit inputs; };
       };
     };
   };
