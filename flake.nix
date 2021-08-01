@@ -43,8 +43,8 @@
         oldbook = lib.nixosSystem {
           system = "x86_64-linux";
           modules = modulesCommon ++ [
-            ./hosts/desktop.nix
             ./hosts/oldbook.nix
+            ./bits/desktop.nix
             ./bits/emacs.nix
             nixos-hardware.nixosModules.common-gpu-nvidia-disable
             nixos-hardware.nixosModules.dell-latitude-3480

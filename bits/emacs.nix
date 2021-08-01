@@ -36,7 +36,13 @@
     # :lang rust
     rustfmt
     rust-analyzer
+  ];
 
+  fonts.fonts = with pkgs; [
+    fira
+    fira-code
+    fira-code-symbols
+    font-awesome_5
     emacs-all-the-icons-fonts
   ];
 }

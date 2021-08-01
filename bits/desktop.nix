@@ -1,11 +1,23 @@
 { config, pkgs, lib, modulesPath, inputs, ... }:
 
 {
+  imports = [
+    ./gnome.nix
+  ];
+
   environment.systemPackages = with pkgs; [
     pulsemixer
-    libsecret
     gnome.libsecret
     brightnessctl
+  ];
+
+  fonts.fonts = with pkgs; [
+    noto-fonts
+    noto-fonts-cjk
+    noto-fonts-emoji
+    noto-fonts-extra
+    liberation_ttf
+    libertine
   ];
 
   users.users.blasting.extraGroups = [
@@ -56,21 +68,6 @@
     pulse.enable = true;
 
     media-session.enable = true;
-  };
-
-  security.pam.services.login.enableGnomeKeyring = true;
-  services.gnome.gnome-keyring.enable = true;
-  services.dbus.packages = [ pkgs.gcr ];
-
-  xdg = {
-    portal = {
-      enable = true;
-      extraPortals = with pkgs; [
-        xdg-desktop-portal-wlr
-        xdg-desktop-portal-gtk
-      ];
-      gtkUsePortal = true;
-    };
   };
 
   networking = {
