@@ -1,9 +1,9 @@
-{ config, lib, pkgs, ... }:
+{ config, pkgs, lib, modulesPath, inputs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
-    # Emacs 28 with Pgtk and native-comp
-    ((emacsPackagesNgGen emacsPgtkGcc).emacsWithPackages (epkgs: [
+    # Emacs 28 with native-comp
+    ((emacsPackagesNgGen emacsGcc).emacsWithPackages (epkgs: [
       epkgs.vterm
     ]))
     binutils
@@ -35,7 +35,7 @@
     texlive.combined.scheme-medium
     # :lang rust
     rustfmt
-    unstable.rust-analyzer
+    rust-analyzer
 
     emacs-all-the-icons-fonts
   ];

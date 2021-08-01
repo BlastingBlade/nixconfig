@@ -17,7 +17,6 @@
 
       pkgs = import nixpkgs {
         inherit system;
-        overlays = [ emacs-overlay.overlay ];
       };
 
       lib = nixpkgs.lib;
@@ -35,6 +34,8 @@
             nix.extraOptions = ''
               experimental-features = nix-command flakes
             '';
+
+            nixpkgs.overlays = [ emacs-overlay.overlay ];
           })
           ./hosts/common.nix
         ];
