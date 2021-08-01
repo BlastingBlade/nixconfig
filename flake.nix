@@ -11,18 +11,25 @@
     , nixos-hardware
     , emacs-overlay
     , ...
-    } @ inputs: {
+    } @ inputs:
+    let
+      system = "x86_64-linux";
 
-      overlays = {
-        emacs = emacs-overlay.overlay;
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ emacs-overlay.overlay ];
       };
+
+      lib = nixpkgs.lib;
+
+    in {
 
       nixosConfigurations = let
         modulesCommon = [
           # Enable Flake
           ({ pkgs, ... }: {
             # Let 'nixos-version --json' know about the Git revision of this flake.
-            system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
+            system.configurationRevision = lib.mkIf (self ? rev) self.rev;
 
             nix.package = pkgs.nixUnstable;
             nix.extraOptions = ''
@@ -32,7 +39,7 @@
           ./hosts/common.nix
         ];
       in {
-        oldbook = nixpkgs.lib.nixosSystem {
+        oldbook = lib.nixosSystem {
           system = "x86_64-linux";
           modules = modulesCommon ++ [
             ./hosts/desktop.nix
