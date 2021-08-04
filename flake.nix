@@ -63,6 +63,7 @@
             ./hosts/oldbook.nix
             ./bits/desktop.nix
             ./bits/emacs.nix
+            ./bits/nonfree.nix
             nixos-hardware.nixosModules.common-gpu-nvidia-disable
             nixos-hardware.nixosModules.dell-latitude-3480
             ({ pkgs, ... }: {
