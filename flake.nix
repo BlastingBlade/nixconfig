@@ -51,6 +51,8 @@
             '';
 
             nixpkgs.overlays = [ emacs-overlay.overlay ];
+
+            environment.systemPackages = with pkgs; [ gnumake ];
           })
           ./hosts/common.nix
         ];
