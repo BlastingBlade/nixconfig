@@ -2,6 +2,10 @@
   inputs = {
     nixpkgs = { url = "github:NixOS/nixpkgs/nixos-21.05"; };
     nixos-hardware = { url = "github:nixos/nixos-hardware"; };
+    home-manager = {
+      url = "github:nix-community/home-manager/release-21.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
   };
 
@@ -9,6 +13,7 @@
     { self
     , nixpkgs
     , nixos-hardware
+    , home-manager
     , emacs-overlay
     , ...
     } @ inputs:
@@ -22,6 +27,16 @@
       lib = nixpkgs.lib;
 
     in {
+
+      homeManagerConfigurations = {
+        blasting = home-manager.lib.homeManagerConfiguration {
+          stateVersion = "21.05";
+          configuration = ./home/blasting.nix;
+          system = system;
+          homeDirectory = "/home/blasting";
+          username = "blasting";
+        };
+      };
 
       nixosConfigurations = let
         modulesCommon = [
