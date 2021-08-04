@@ -25,17 +25,30 @@
     ]))
     # :checkers grammar
     languagetool
+    # :tools direnv
+    direnv
     # :tools editorconfig
     editorconfig-core-c
+    # :tools lookup & :lang org +roam
+    sqlite
     # :lang cc
     ccls
+    glslang
+    # :lang markdown
+    discount
+    grip
+    # :lang nix
+    nixfmt
     # :lang javascript
     nodePackages.javascript-typescript-langserver
-    # :lang latex & :lang org (latex previews)
+    # :lang latex & :lang org
     texlive.combined.scheme-medium
+    graphviz
     # :lang rust
     rustfmt
     rust-analyzer
+    # :lang sh
+    shellcheck
   ];
 
   fonts.fonts = with pkgs; [
