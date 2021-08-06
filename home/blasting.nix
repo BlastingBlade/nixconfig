@@ -11,6 +11,14 @@
       ll = "ls -l";
     };
   };
+  programs.direnv = {
+    enable = true;
+    enableBashIntegration = true;
+    nix-direnv = {
+      enable = true;
+      enableFlakes = true;
+    };
+  };
   programs.git = {
     enable = true;
     userName  = "Henry Fiantaca";
