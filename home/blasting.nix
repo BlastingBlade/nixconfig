@@ -3,6 +3,10 @@
 {
   programs.home-manager.enable = true;
 
+  home.packages = with pkgs; [
+    buildah
+  ];
+
   programs.bash = {
     enable = true;
     enableVteIntegration = true;

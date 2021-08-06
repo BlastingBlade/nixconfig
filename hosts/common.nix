@@ -25,4 +25,6 @@
     enable = true;
     nssmdns = true;
   };
+
+  virtualisation.podman.enable = true;
 }
