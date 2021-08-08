@@ -37,8 +37,6 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    gnomeExtensions.appindicator
-
     gnome.baobab
     gnome.eog
     gnome.gedit
@@ -48,7 +46,14 @@
     gnome.nautilus
 
     gnome.dconf-editor
-  ];
+  ] ++ (with pkgs.gnomeExtensions; [
+    appindicator
+    adwaita-theme-switcher
+    always-indicator
+    control-blur-effect-on-lock-screen
+    espresso
+    gsconnect
+  ]);
 
   programs = {
     evince.enable = true;
