@@ -40,6 +40,9 @@
     enable = true;
     userName  = "Henry Fiantaca";
     userEmail = "hfiantaca@gmail.com";
+    extraConfig = {
+      init.defaultBranch = "main";
+    };
   };
   
   programs.gpg = {
