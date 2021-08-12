@@ -67,7 +67,11 @@
             nixos-hardware.nixosModules.common-gpu-nvidia-disable
             nixos-hardware.nixosModules.dell-latitude-3480
             ({ pkgs, ... }: {
-              hardware.opengl.enable = true;
+              hardware.opengl = {
+                enable = true;
+                driSupport = true;
+                driSupport32Bit = true;
+              };
               hardware.bluetooth.enable = true;
             })
           ];

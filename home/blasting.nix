@@ -5,6 +5,15 @@
 
   home.packages = with pkgs; [
     buildah
+
+    lutris
+  ];
+
+  # lutris needs steam for integration
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
+    "steam"
+    "steam-original"
+    "steam-runtime"
   ];
 
   home.sessionVariables = {
