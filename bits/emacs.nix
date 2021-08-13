@@ -3,7 +3,7 @@
 {
   environment.systemPackages = with pkgs; [
     # Emacs 28 with native-comp
-    ((emacsPackagesNgGen emacsGcc).emacsWithPackages (epkgs: [
+    ((emacsPackagesNgGen emacsPgtkGcc).emacsWithPackages (epkgs: [
       epkgs.vterm
     ]))
     binutils
