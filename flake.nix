@@ -50,6 +50,10 @@
               experimental-features = nix-command flakes
             '';
 
+            # Set the regestry to use the same revision of nixpkgs as this flake
+            nix.registry.nixpkgs.flake = inputs.nixpkgs;
+            nix.registry.self.flake = inputs.self;
+
             nixpkgs.overlays = [ emacs-overlay.overlay ];
 
             environment.systemPackages = with pkgs; [ gnumake ];
