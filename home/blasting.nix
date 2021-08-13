@@ -7,6 +7,9 @@
     buildah
 
     lutris
+
+    freecad
+    prusa-slicer
   ];
 
   # lutris needs steam for integration
