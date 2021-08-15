@@ -26,7 +26,7 @@
   programs.bash = {
     enable = true;
     enableVteIntegration = true;
-    historyControl = [ "erasedups" "erasedups" ];
+    historyControl = [ "erasedups" "ignorespace" ];
     shellAliases = {
       ll = "ls -l";
     };
