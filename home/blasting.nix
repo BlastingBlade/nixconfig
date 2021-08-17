@@ -88,17 +88,14 @@
   };
 
   gtk = {
+    enable = true;
     font ={
       package = pkgs.cantarell-fonts;
       name = "Cantarell";
       size = 10;
     };
-    theme = {
-      package = pkgs.nordic;
-      name = "Nordic";
-    };
+    gtk3.extraConfig = { gtk-application-prefer-dark-theme = 0; };
   };
-
   qt = {
     enable = true;
     platformTheme = "gtk";
@@ -110,16 +107,16 @@
   accounts.email = {
     accounts =
       let
-        makeGmailAccount = a:
+        makeGmailAccount = { address, signature ? "" }:
           {
-            address = a.address;
+            address = address;
             realName = "Henry Fiantaca";
             signature = {
               showSignature = "append";
-              text = a.signature;
+              text = signature;
             };
-            userName = a.address;
-            passwordCommand = "secret-tool lookup app-pwd ${a.address}";
+            userName = address;
+            passwordCommand = "secret-tool lookup app-pwd ${address}";
             flavor = "gmail.com";
             mbsync = {
               enable = true;
@@ -130,13 +127,13 @@
           };
       in
         {
-          "gmail" = ( { primary = true; } // makeGmailAccount {
+          "gmail" = (makeGmailAccount {
             address = "hfiantaca@gmail.com";
             signature = ''
   
             -- Henry Fiantaca
             '';
-          });
+          } // { primary = true; });
           "uncc" = makeGmailAccount {
             address = "hfiantac@uncc.edu";
             signature = ''
@@ -148,7 +145,6 @@
           };
         };
     maildirBasePath = "/home/blasting/.local/share/maildir";
-    #maildirBasePath = "${home.homeDirectory}/.local/share/maildir";
   };
 
   programs.mpv = {
