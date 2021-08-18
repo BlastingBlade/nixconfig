@@ -18,11 +18,8 @@
     isNormalUser = true;
     extraGroups = [
       "wheel"
-      "adbusers"
     ];
   };
-
-  programs.adb.enable = true;
 
   services.avahi = {
     enable = true;

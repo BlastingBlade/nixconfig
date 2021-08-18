@@ -26,6 +26,8 @@
       "video"
     ];
 
+  programs.adb.enable = true;
+
   console = {
     earlySetup = true;
     font = "Lat2-Terminus16";

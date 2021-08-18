@@ -81,6 +81,13 @@
           ];
           specialArgs = { inherit inputs; };
         };
+        planeptune = lib.nixosSystem {
+          system = "aarch64-linux";
+          modules = modulesCommon ++ [
+            nixos-hardware.nixosModules.raspberry-pi-4
+            ./hosts/planeptune.nix
+          ];
+        };
       };
     };
 }
