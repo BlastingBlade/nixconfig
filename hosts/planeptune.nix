@@ -50,8 +50,11 @@
   services.dnsmasq = {
     enable = true;
     servers = [
-      "1.1.1.1"
-      "1.0.0.1"
+      # OpenDNS
+      "208.67.222.222"
+      "208.67.220.220"
+      "2620:119:35::35"
+      "2620:119:53::53"
     ];
     extraConfig = ''
       interface=wlan0
