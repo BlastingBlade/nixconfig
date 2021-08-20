@@ -1,7 +1,7 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
-  programs.home-manager.enable = true;
+  imports = [ ./blasting.server.nix ];
 
   home.packages = with pkgs; [
     buildah
@@ -23,14 +23,6 @@
     MOZ_ENABLE_WAYLAND = 1;
   };
 
-  programs.bash = {
-    enable = true;
-    enableVteIntegration = true;
-    historyControl = [ "erasedups" "ignorespace" ];
-    shellAliases = {
-      ll = "ls -l";
-    };
-  };
   programs.direnv = {
     enable = true;
     enableBashIntegration = true;
@@ -39,28 +31,7 @@
       enableFlakes = true;
     };
   };
-  programs.git = {
-    enable = true;
-    userName  = "Henry Fiantaca";
-    userEmail = "hfiantaca@gmail.com";
-    extraConfig = {
-      init.defaultBranch = "main";
-    };
-  };
-  
-  programs.gpg = {
-    enable = true;
-  };
-  services.gpg-agent = {
-    enable = true;
-    pinentryFlavor = "gnome3";
-  };
-  
-  programs.man = {
-    enable = true;
-    generateCaches = true;
-  };
-  
+
   programs.password-store = {
     enable = true;
     package = pkgs.pass.withExtensions (exts: [

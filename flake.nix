@@ -86,6 +86,11 @@
           modules = modulesCommon ++ [
             nixos-hardware.nixosModules.raspberry-pi-4
             ./hosts/planeptune.nix
+            home-manager.nixosModules.home-manager {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.blasting = import ./home/blasting.server.nix;
+            }
           ];
         };
       };
