@@ -9,6 +9,7 @@
     lutris
 
     freecad
+    blender
     prusa-slicer
   ];
 
