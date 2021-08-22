@@ -11,7 +11,7 @@
       enable = true;
       allowPing = true;
       pingLimit = "--limit 1/minute --limit-burst 5";
-      interfaces.wlan0.allowedTCPPorts = [ 22 8000 ];
+      allowedTCPPorts = [ 22 8000 ];
     };
   };
 
