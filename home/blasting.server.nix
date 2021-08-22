@@ -1,30 +1,11 @@
 { lib, pkgs, ... }:
 
 {
-  programs.home-manager.enable = true;
+  imports = [ ./blasting.common.nix ];
 
-  programs.bash = {
-    enable = true;
-    historyControl = [ "erasedups" "ignorespace" ];
-    shellAliases = {
-      ll = "ls -l";
-    };
-  };
+  home.packages = with pkgs; [
+    nodejs
+  ];
 
-  programs.git = {
-    enable = true;
-    userName  = "Henry Fiantaca";
-    userEmail = "hfiantaca@gmail.com";
-    extraConfig = {
-      init.defaultBranch = "main";
-    };
-  };
-
-  programs.gpg.enable = true;
-  services.gpg-agent.enable = true;
-
-  programs.man = {
-    enable = true;
-    generateCaches = true;
-  };
+  # TODO: enable services for server use
 }

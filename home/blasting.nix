@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 
 {
-  imports = [ ./blasting.server.nix ];
+  imports = [ ./blasting.common.nix ];
 
   home.packages = with pkgs; [
     buildah
