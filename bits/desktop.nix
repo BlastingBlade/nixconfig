@@ -73,13 +73,10 @@
   };
 
   networking = {
-    wireless.iwd.enable = true;
     networkmanager = {
       enable = true;
       dhcp = "internal";
       wifi = {
-        backend = "iwd";
-        #macAddress = "random";
         powersave = true;
       };
     };
