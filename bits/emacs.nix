@@ -42,7 +42,18 @@
     # :lang javascript
     nodePackages.javascript-typescript-langserver
     # :lang latex & :lang org
-    texlive.combined.scheme-medium
+    (texlive.combine { inherit (texlive)
+        scheme-medium
+        wrapfig
+        minted
+        fvextra
+        upquote
+        catchfile
+        xstring
+        framed
+        titling
+    ;})
+    python39Packages.pygments
     graphviz
     # :lang rust
     rustfmt
