@@ -5,6 +5,7 @@
     # Emacs 28 with native-comp
     ((emacsPackagesNgGen emacsPgtkGcc).emacsWithPackages (epkgs: [
       epkgs.vterm
+      epkgs.pdf-tools
     ]))
     binutils
 
