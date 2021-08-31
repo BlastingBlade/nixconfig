@@ -6,7 +6,19 @@
       url = "github:nix-community/home-manager/release-21.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
+
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+    };
+    nix-doom-emacs = {
+      url = "github:vlaci/nix-doom-emacs/develop";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.emacs-overlay.follows = "emacs-overlay";
+      inputs.straight = {
+        url = "github:raxod502/straight.el";
+        flake = false;
+       };
+    };
   };
 
   outputs =
@@ -15,6 +27,7 @@
     , nixos-hardware
     , home-manager
     , emacs-overlay
+    , nix-doom-emacs
     , ...
     } @ inputs:
     let
@@ -22,6 +35,12 @@
 
       pkgs = import nixpkgs {
         inherit system;
+        overlays = [ emacs-overlay.overlay ];
+        config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+          "steam"
+          "steam-original"
+          "steam-runtime"
+        ];
       };
 
       lib = nixpkgs.lib;
@@ -31,7 +50,7 @@
       homeManagerConfigurations = {
         blasting = home-manager.lib.homeManagerConfiguration {
           stateVersion = "21.05";
-          configuration = ./home/blasting.nix;
+          configuration = import ./home/blasting.nix { inherit pkgs lib nix-doom-emacs; };
           system = system;
           homeDirectory = "/home/blasting";
           username = "blasting";
@@ -54,8 +73,6 @@
             nix.registry.nixpkgs.flake = inputs.nixpkgs;
             nix.registry.self.flake = inputs.self;
 
-            nixpkgs.overlays = [ emacs-overlay.overlay ];
-
             environment.systemPackages = with pkgs; [ gnumake ];
           })
           ./hosts/common.nix
@@ -66,7 +83,6 @@
           modules = modulesCommon ++ [
             ./hosts/oldbook.nix
             ./bits/desktop.nix
-            ./bits/emacs.nix
             ./bits/nonfree.nix
             nixos-hardware.nixosModules.common-gpu-nvidia-disable
             nixos-hardware.nixosModules.dell-latitude-3480

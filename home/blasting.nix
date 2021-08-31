@@ -1,9 +1,37 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, nix-doom-emacs, ... }:
 
 {
-  imports = [ ./blasting.common.nix ];
+  imports = [
+    ./blasting.common.nix
+    nix-doom-emacs.hmModule
+  ];
 
   home.packages = with pkgs; [
+    # doom depends
+    fira
+    fira-code
+    fira-code-symbols
+    emacs-all-the-icons-fonts
+    # :checkers spell
+    (pkgs.aspellWithDicts (ds: with ds; [
+      en en-computers en-science
+    ]))
+    # :lang latex
+    python39Packages.pygments
+    graphviz
+    # :lang cc
+    ccls
+    # :lang javascript
+    nodePackages.javascript-typescript-langserver
+    # :lang rust
+    rustfmt
+    rust-analyzer
+
+    fd
+    (ripgrep.override { withPCRE2 = true; })
+    direnv
+    nixfmt
+
     buildah
 
     lutris
@@ -11,13 +39,7 @@
     freecad
     blender
     prusa-slicer
-  ];
 
-  # lutris needs steam for integration
-  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (pkgs.lib.getName pkg) [
-    "steam"
-    "steam-original"
-    "steam-runtime"
   ];
 
   home.sessionVariables = {
@@ -45,7 +67,43 @@
       PASSWORD_STORE_CLIP_TIME = "60";
     };
   };
+
   fonts.fontconfig.enable = true;
+  programs.texlive = {
+    enable = true;
+    packageSet = pkgs.texlive;
+    extraPackages = tpkgs: {
+      inherit (tpkgs)
+        scheme-medium
+        collection-fontsrecommended
+        wrapfig
+        minted
+        fvextra
+        upquote
+        catchfile
+        xstring
+        framed
+        titling ;
+    };
+  };
+  programs.doom-emacs = {
+    enable = true;
+    emacsPackage = pkgs.emacsPgtkGcc;
+    # emacsPackagesOverlay
+    doomPrivateDir = ./doom.d;
+    extraPackages = [ pkgs.mu ];
+    extraConfig = ''
+      (setq sendmail-program "${pkgs.msmtp}/bin/msmtp"
+            mu4e-mu-binary "${pkgs.mu}/bin/mu")
+    '';
+  };
+  services.emacs = {
+    enable = true;
+    client = {
+      enable = true;
+      arguments = [ "-c" ];
+    };
+  };
 
   xdg.userDirs = {
     enable = true;
