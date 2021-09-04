@@ -3,6 +3,11 @@
 {
   hardware.enableRedistributableFirmware = true;
 
+  environment.systemPackages = with pkgs; [
+    nodejs
+    tmux
+  ];
+
   networking = {
     hostName = "planeptune";
     usePredictableInterfaceNames = false;
