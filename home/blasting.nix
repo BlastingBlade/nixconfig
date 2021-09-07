@@ -21,11 +21,15 @@
     graphviz
     # :lang cc
     ccls
+    bear
+    clang
     # :lang javascript
     nodePackages.javascript-typescript-langserver
     # :lang rust
     rustfmt
     rust-analyzer
+    cargo
+    rustc
 
     fd
     (ripgrep.override { withPCRE2 = true; })

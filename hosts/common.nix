@@ -18,6 +18,7 @@
     isNormalUser = true;
     extraGroups = [
       "wheel"
+      "dialout"
     ];
   };
 
