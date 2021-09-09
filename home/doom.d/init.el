@@ -151,6 +151,7 @@
         +nixfmt)
        ;;ocaml             ; an objective camel
        (org              ; organize your plain life in plain text
+        +hugo
         +present
         +pretty
         +roam2)

@@ -16,6 +16,8 @@
     (pkgs.aspellWithDicts (ds: with ds; [
       en en-computers en-science
     ]))
+    # :lang org +hugo
+    hugo
     # :lang latex
     python39Packages.pygments
     graphviz
