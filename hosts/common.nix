@@ -20,6 +20,9 @@
       "wheel"
       "dialout"
     ];
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICmKlAu/Fgvt5TYZgBV3aZdoTQ+SfI/x+0zUEsyK9ET1 hfiantaca@gmail.com"
+    ];
   };
 
   services.avahi = {
@@ -29,6 +32,13 @@
       enable = true;
       addresses = true;
     };
+  };
+
+  services.openssh = {
+    enable = true;
+    passwordAuthentication = false;
+    permitRootLogin = "yes";
+    openFirewall = true;
   };
 
   virtualisation.podman.enable = true;

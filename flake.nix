@@ -19,6 +19,8 @@
         flake = false;
        };
     };
+
+    impermanence = { url = "github:nix-community/impermanence"; };
   };
 
   outputs =
@@ -28,6 +30,7 @@
     , home-manager
     , emacs-overlay
     , nix-doom-emacs
+    , impermanence
     , ...
     } @ inputs:
     let
@@ -108,6 +111,19 @@
               home-manager.users.blasting = import ./home/blasting.server.nix;
             }
           ];
+        };
+        histoire = lib.nixosSystem {
+          system = "x86_64-linux";
+          modules = modulesCommon ++ [
+            ./hosts/histoire.nix
+            impermanence.nixosModules.impermanence
+            home-manager.nixosModules.home-manager {
+              home-manager.useGlobalPkgs = true;
+              home-manager.useUserPackages = true;
+              home-manager.users.blasting = import ./home/blasting.server.nix;
+            }
+          ];
+          specialArgs = { inherit inputs; };
         };
       };
     };
