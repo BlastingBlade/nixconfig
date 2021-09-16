@@ -36,6 +36,7 @@
     interfaces.eth0 = {
       useDHCP = true;
     };
+    firewall.allowedTCPPorts = [ 80 443 ];
   };
 
   users = {
@@ -44,6 +45,21 @@
       root.initialHashedPassword = "$6$jTnBoykh2C$c3xA1b0jHixv6WeFIQCmQ0Vc1l.N.l5Uc0t7/d.WPbkd8vERnWjZv8ZgGPNshPr3cME.RXGiOe5oi5hm2ym/q1";
       blasting.initialHashedPassword = "$6$jTnBoykh2C$c3xA1b0jHixv6WeFIQCmQ0Vc1l.N.l5Uc0t7/d.WPbkd8vERnWjZv8ZgGPNshPr3cME.RXGiOe5oi5hm2ym/q1";
     };
+  };
+
+  services.nginx = {
+    enable = true;
+    virtualHosts = {
+      "hfiantaca.com" = {
+        addSSL = true;
+        enableACME = true;
+        root = "/srv/www/hfiantaca.com";
+      };
+    };
+  };
+  security.acme = {
+    acceptTerms = true;
+    email = "hfiantaca@gmail.com";
   };
 
   services.avahi.enable = lib.mkForce false;
