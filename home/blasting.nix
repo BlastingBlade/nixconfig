@@ -89,7 +89,9 @@
         catchfile
         xstring
         framed
-        titling ;
+        titling
+        paralist
+        forest;
     };
   };
   programs.doom-emacs = {
