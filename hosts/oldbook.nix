@@ -3,16 +3,22 @@
 {
   networking.hostName = "oldbook";
 
-  nix.maxJobs = lib.mkDefault 4;
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  hardware.opengl = {
+    enable = true;
+    driSupport = true;
+    driSupport32Bit = true;
+  };
+  hardware.bluetooth.enable = true;
 
-  hardware.enableRedistributableFirmware = lib.mkDefault true;
+  nix.maxJobs = 4;
+  powerManagement.cpuFreqGovernor = "powersave";
+
+  hardware.enableRedistributableFirmware = true;
 
   boot = {
     loader.systemd-boot.enable = true;
     loader.efi.canTouchEfiVariables = true;
 
-    kernelPackages = lib.mkDefault(pkgs.linuxPackages_latest);
     kernelModules = lib.mkDefault([ "kvm-intel" ]);
 
     initrd = {
@@ -25,48 +31,51 @@
         "rtsx_usb_sdmmc"
       ];
 
-      luks.devices."NixOS".device = "/dev/disk/by-uuid/72ffb197-a853-436e-a188-580be0fd53e0";
+      luks.devices = let
+        discarding = dev: { device = dev; allowDiscards = true; };
+      in {
+        "NixOS"   = discarding "/dev/disk/by-uuid/2208b83c-fea2-4d91-83be-426e9b59a725";
+        "NixSwap" = discarding "/dev/disk/by-uuid/4bab5979-8e36-40bf-90d2-5580ac77669b";
+        "NixHome" = discarding "/dev/disk/by-uuid/2edb188d-8428-4fab-80c6-190808eb9450";
+      };
     };
   };
 
   fileSystems = {
     "/" = {
-      device = "/dev/disk/by-uuid/a6285339-338f-4694-8299-af31561b25bd";
-      fsType = "btrfs";
-      options = [ "subvol=root" "compress=zstd" "noatime" ];
+      device  = "none";
+      fsType  = "tmpfs";
+      options = [ "defaults" "size=2G" "mode=755" ];
     };
 
     "/home" = {
-      device = "/dev/disk/by-uuid/a6285339-338f-4694-8299-af31561b25bd";
-      fsType = "btrfs";
-      options = [ "subvol=home" "compress=zstd" "noatime"];
+      device  = "/dev/disk/by-uuid/e6ae7a64-f2f1-4c48-b01e-f1eee7d15d01";
+      fsType  = "ext4";
+      options = [ "defaults" "discard" "noatime" ];
     };
 
     "/nix" = {
-      device = "/dev/disk/by-uuid/a6285339-338f-4694-8299-af31561b25bd";
-      fsType = "btrfs";
-      options = [ "subvol=nix" "compress=zstd" "noatime"];
-    };
-
-    "/persist" = {
-      device = "/dev/disk/by-uuid/a6285339-338f-4694-8299-af31561b25bd";
-      fsType = "btrfs";
-      options = [ "subvol=persist" "compress=zstd" "noatime"];
-    };
-
-    "/var/log" = {
-      device = "/dev/disk/by-uuid/a6285339-338f-4694-8299-af31561b25bd";
-      fsType = "btrfs";
-      options = [ "subvol=log" "compress=zstd" "noatime"];
-      neededForBoot = true;
+      device  = "/dev/disk/by-uuid/5a74542d-0ed6-4a61-9337-eaff49df2a68";
+      fsType  = "ext4";
+      options = [ "defaults" "discard" "noatime" ];
     };
 
     "/boot" = {
-      device = "/dev/disk/by-uuid/EAFD-5094";
-      fsType = "vfat";
+      device  = "/dev/disk/by-uuid/BA39-F64A";
+      fsType  = "vfat";
+      options = [ "defaults" "discard" ];
     };
   };
   swapDevices = [
-    { device = "/dev/disk/by-uuid/c674f83a-efcb-4177-9002-d8f8a42c7296"; }
+    { device = "/dev/disk/by-uuid/f8fc6d65-eab1-4e88-a30d-868bd2ea77a4"; }
   ];
+
+  environment.persistence."/nix/persist" = {
+    directories = [
+      "/etc/nixos"
+      "/etc/NetworkManager"
+      "/var/lib"
+      "/var/log"
+    ];
+  };
 }

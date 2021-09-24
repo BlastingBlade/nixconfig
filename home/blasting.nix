@@ -132,7 +132,7 @@
       name = "Cantarell";
       size = 10;
     };
-    gtk3.extraConfig = { gtk-application-prefer-dark-theme = 0; };
+    gtk3.extraConfig = { gtk-application-prefer-dark-theme = 1; };
   };
   qt = {
     enable = true;
