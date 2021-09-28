@@ -39,16 +39,24 @@
       pkgs = import nixpkgs {
         inherit system;
         overlays = [ emacs-overlay.overlay ];
+      };
+
+      pkgsNonfree = import nixpkgs {
+        inherit system;
+        overlays = [ emacs-overlay.overlay ];
         config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
           "steam"
           "steam-original"
           "steam-runtime"
+          "discord"
         ];
       };
 
       lib = nixpkgs.lib;
 
     in {
+
+      nixosModules = import ./nixosModules;
 
       homeManagerConfigurations = {
         blasting = home-manager.lib.homeManagerConfiguration {
@@ -61,6 +69,7 @@
       };
 
       nixosConfigurations = let
+        hosts = import ./hosts inputs;
         modulesCommon = [
           # Enable Flake
           ({ pkgs, ... }: {
@@ -80,16 +89,38 @@
           })
           ./hosts/common.nix
         ];
+        mycommon = ({ ... }:
+          {
+            time.timeZone = "America/New_York";
+            blasting.common = {
+              user = {
+                username = "blasting";
+                realname = "Henry Fiantaca";
+                sshAuthorizedKeys = [
+                  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICmKlAu/Fgvt5TYZgBV3aZdoTQ+SfI/x+0zUEsyK9ET1 hfiantaca@gmail.com"
+                ];
+                passwordHash =
+                  "$6$jTnBoykh2C$c3xA1b0jHixv6WeFIQCmQ0Vc1l.N.l5Uc0t7/d.WPbkd8vERnWjZv8ZgGPNshPr3cME.RXGiOe5oi5hm2ym/q1";
+              };
+            };
+
+            nix.package = pkgs.nixUnstable;
+            nix.extraOptions = ''
+              experimental-features = nix-command flakes
+            '';
+            system.configurationRevision = lib.mkIf (self ? rev) self.rev;
+            nix.registry.nixpkgs.flake = inputs.nixpkgs;
+            nix.registry.self.flake = inputs.self;
+            environment.systemPackages = with pkgs; [ git gnumake ];
+          });
       in {
         oldbook = lib.nixosSystem {
           system = "x86_64-linux";
-          modules = modulesCommon ++ [
-            ./hosts/oldbook.nix
-            ./bits/desktop.nix
-            ./bits/nonfree.nix
-            nixos-hardware.nixosModules.common-gpu-nvidia-disable
-            nixos-hardware.nixosModules.dell-latitude-3480
-            impermanence.nixosModules.impermanence
+          modules = [
+            mycommon
+            self.nixosModules.common
+            self.nixosModules.desktop
+            hosts.oldbook
           ];
           specialArgs = { inherit inputs; };
         };

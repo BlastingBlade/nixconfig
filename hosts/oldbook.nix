@@ -1,19 +1,34 @@
-{ config, pkgs, lib, modulesPath, inputs, ... }:
+inputs:
+
+{ config, pkgs, lib, ... }:
 
 {
+  imports = [
+    inputs.nixos-hardware.nixosModules.common-gpu-nvidia-disable
+    inputs.nixos-hardware.nixosModules.dell-latitude-3480
+    inputs.impermanence.nixosModules.impermanence
+  ];
+
   networking.hostName = "oldbook";
+
+  nix.maxJobs = 4;
+  powerManagement.cpuFreqGovernor = "powersave";
+
+  hardware.enableRedistributableFirmware = true;
+
+  hardware.bluetooth.enable = true;
 
   hardware.opengl = {
     enable = true;
     driSupport = true;
     driSupport32Bit = true;
   };
-  hardware.bluetooth.enable = true;
 
-  nix.maxJobs = 4;
-  powerManagement.cpuFreqGovernor = "powersave";
-
-  hardware.enableRedistributableFirmware = true;
+  blasting.desktop = {
+    steam.hardware = true;
+    devices.adb.enable = true;
+    v4l2loopback.enable = true;
+  };
 
   boot = {
     loader.systemd-boot.enable = true;
