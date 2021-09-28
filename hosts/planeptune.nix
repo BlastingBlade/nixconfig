@@ -1,6 +1,10 @@
-{ config, pkgs, lib, modulesPath, inputs, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
+  imports = [
+    inputs.nixos-hardware.nixosModules.raspberry-pi-4
+  ];
+
   hardware.enableRedistributableFirmware = true;
 
   environment.systemPackages = with pkgs; [
@@ -15,12 +19,9 @@
     firewall = {
       enable = true;
       allowPing = true;
-      pingLimit = "--limit 1/minute --limit-burst 5";
-      allowedTCPPorts = [ 22 8000 ];
+      allowedTCPPorts = [ 8000 ];
     };
   };
-
-  services.openssh.enable = true;
 
   fileSystems = {
     "/" = {

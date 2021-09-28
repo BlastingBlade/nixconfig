@@ -6,6 +6,7 @@ let
   cfg = config.blasting.desktop;
   mkEnableDefault = desc: mkEnableOption desc // { default = true; };
 in {
+
   options.blasting.desktop = {
     console = {
       colors = {

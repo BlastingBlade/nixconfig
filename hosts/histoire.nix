@@ -1,34 +1,11 @@
-{ config, pkgs, lib, modulesPath, inputs, ... }:
+{ config, pkgs, lib, inputs, ... }:
 
 {
+  imports = [
+    inputs.impermanence.nixosModules.impermanence
+  ];
+
   networking.hostName = "histoire";
-
-  environment.persistence."/nix/persist" = {
-    directories = [
-      "/srv"       # service data
-      "/var/lib"   # system service persistent data
-      "/var/log"   # the place that journald dumps it logs to
-      "/home"      # user dirs
-    ];
-  };
-  environment.etc."machine-id".source
-    = "/nix/persist/etc/machine-id";
-
-  services.openssh.hostKeys = [
-    { bits = 4096;
-      path = "/nix/persist/etc/ssh/ssh_host_rsa_key";
-      type = "rsa";
-    }
-    { path = "/nix/persist/etc/ssh/ssh_host_ed25519_key";
-      type = "ed25519";
-    }
-  ];
-
-  environment.systemPackages = with pkgs; [
-    inetutils
-    mtr
-    sysstat
-  ];
 
   networking = {
     useDHCP = false;
@@ -39,13 +16,11 @@
     firewall.allowedTCPPorts = [ 80 443 ];
   };
 
-  users = {
-    mutableUsers = false;
-    users = {
-      root.initialHashedPassword = "$6$jTnBoykh2C$c3xA1b0jHixv6WeFIQCmQ0Vc1l.N.l5Uc0t7/d.WPbkd8vERnWjZv8ZgGPNshPr3cME.RXGiOe5oi5hm2ym/q1";
-      blasting.initialHashedPassword = "$6$jTnBoykh2C$c3xA1b0jHixv6WeFIQCmQ0Vc1l.N.l5Uc0t7/d.WPbkd8vERnWjZv8ZgGPNshPr3cME.RXGiOe5oi5hm2ym/q1";
-    };
-  };
+  environment.systemPackages = with pkgs; [
+    inetutils
+    mtr
+    sysstat
+  ];
 
   services.nginx = {
     enable = true;
@@ -62,7 +37,7 @@
     email = "hfiantaca@gmail.com";
   };
 
-  services.avahi.enable = lib.mkForce false;
+  blasting.common.mdns.enable = false;
 
   #FIXME grub cannot find grub.cfg on boot
   boot = {
@@ -131,5 +106,14 @@
     { device = "/dev/disk/by-label/swap"; }
   ];
 
+  environment.persistence."/nix/persist" = {
+    directories = [
+      "/srv"       # service data
+      "/var/lib"   # system service persistent data
+      "/var/log"   # the place that journald dumps it logs to
+      "/home"      # user dirs
+    ];
+  };
+  environment.etc."machine-id".source
+    = "/nix/persist/etc/machine-id";
 }
-

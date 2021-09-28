@@ -1,7 +1,5 @@
-inputs:
-
 {
-  oldbook = import ./oldbook.nix inputs;
-  #planeptune = import ./planeptune.nix inputs;
-  #histoire = import ./histoire.nix inputs;
+  oldbook = import ./oldbook.nix;
+  planeptune = import ./planeptune.nix;
+  histoire = import ./histoire.nix;
 }

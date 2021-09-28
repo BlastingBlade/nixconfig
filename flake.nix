@@ -69,28 +69,11 @@
       };
 
       nixosConfigurations = let
-        hosts = import ./hosts inputs;
-        modulesCommon = [
-          # Enable Flake
-          ({ pkgs, ... }: {
-            # Let 'nixos-version --json' know about the Git revision of this flake.
-            system.configurationRevision = lib.mkIf (self ? rev) self.rev;
-
-            nix.package = pkgs.nixUnstable;
-            nix.extraOptions = ''
-              experimental-features = nix-command flakes
-            '';
-
-            # Set the regestry to use the same revision of nixpkgs as this flake
-            nix.registry.nixpkgs.flake = inputs.nixpkgs;
-            nix.registry.self.flake = inputs.self;
-
-            environment.systemPackages = with pkgs; [ gnumake ];
-          })
-          ./hosts/common.nix
-        ];
-        mycommon = ({ ... }:
+        hosts = import ./hosts;
+        commonModule = ({ ... }:
           {
+            imports = [ inputs.self.nixosModules.common ];
+
             time.timeZone = "America/New_York";
             blasting.common = {
               user = {
@@ -117,8 +100,7 @@
         oldbook = lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
-            mycommon
-            self.nixosModules.common
+            commonModule
             self.nixosModules.desktop
             hosts.oldbook
           ];
@@ -126,21 +108,22 @@
         };
         planeptune = lib.nixosSystem {
           system = "aarch64-linux";
-          modules = modulesCommon ++ [
-            nixos-hardware.nixosModules.raspberry-pi-4
-            ./hosts/planeptune.nix
+          modules = [
+            commonModule
+            hosts.planeptune
             home-manager.nixosModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.blasting = import ./home/blasting.server.nix;
             }
           ];
+          specialArgs = { inherit inputs; };
         };
         histoire = lib.nixosSystem {
           system = "x86_64-linux";
-          modules = modulesCommon ++ [
-            ./hosts/histoire.nix
-            impermanence.nixosModules.impermanence
+          modules = [
+            commonModule
+            hosts.histoire
             home-manager.nixosModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
