@@ -25,7 +25,6 @@ inputs:
   };
 
   blasting.desktop = {
-    steam.hardware = true;
     devices.adb.enable = true;
     v4l2loopback.enable = true;
   };
@@ -87,8 +86,8 @@ inputs:
 
   environment.persistence."/nix/persist" = {
     directories = [
-      "/etc/nixos"
       "/etc/NetworkManager"
+      "/srv"
       "/var/lib"
       "/var/log"
     ];

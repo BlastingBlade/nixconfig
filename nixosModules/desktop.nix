@@ -76,7 +76,8 @@ in {
     libsecret.enable = mkEnableDefault "Enable the libsecret secret manager";
 
     steam = {
-      hardware = mkEnableOption "hardware.steam-hardware.enable";
+      # FIXME: all steam features in nixos require nonfree pkgs.steam
+      # hardware = mkEnableOption "hardware.steam-hardware.enable";
       remoteplay = mkEnableOption "Firewall rules to open RemorePlay";
       # dedicatedServers
     };
@@ -86,12 +87,30 @@ in {
       exclusiveCaps = mkEnableDefault "Enable 'exclusive_caps' option (chrome compat)";
       # TODO: devices = listOf uint where 'label = number' for video_nr=number,number and card_label=label,label
     };
+
+    gnome = {
+      enable = mkEnableDefault "Enable the GNOME desktop (gnome, gdm, apps, ...)";
+      gsconnect = mkEnableDefault "Enable thee GSConnect extension";
+    };
   };
 
   config = {
     environment.systemPackages =
       optional cfg.pipewire.enable pkgs.pulsemixer
       ++ optional cfg.libsecret.enable pkgs.gnome.libsecret
+      ++ optionals cfg.gnome.enable (with pkgs; [
+        gnome.baobab
+        gnome.eog
+        gnome.gedit
+        gnome.gnome-calculator
+        gnome.gnome-screenshot
+        gnome.gnome-system-monitor
+        gnome.nautilus
+      ] ++ (with pkgs.gnomeExtensions; [
+        appindicator
+        adwaita-theme-switcher
+        espresso
+      ] ++ optional cfg.gnome.gsconnect pkgs.gnomeExtensions.gsconnect))
     ;
 
     # TODO: map over users attr of each cfg, adding matching extaGroups entry
@@ -123,6 +142,7 @@ in {
     };
 
     sound.enable = mkIf cfg.pipewire.enable false;
+    hardware.pulseaudio.enable = mkIf cfg.pipewire.enable false;
     security.rtkit.enable = mkIf cfg.pipewire.enable true;
     services.pipewire = mkIf cfg.pipewire.enable {
       enable = true;
@@ -140,25 +160,27 @@ in {
       keyMap = "us";
       font = "Lat2-Terminus16";
       colors = mkIf cfg.console.colors.enable (let
-        nord = [
-          "292d3e"
-          "f07178"
-          "c3e88d"
-          "ffcb6b"
-          "82aaff"
-          "c792ea"
-          "89ddff"
-          "d0d0d0"
-          "434758"
-          "ff8b92"
-          "ddffa7"
-          "ffe585"
-          "9cc4ff"
-          "e1acff"
-          "a3f7ff"
-          "ffffff"
-        ];
-      in "$(cfg.console.colors.scheme)");
+        knownSchemes = {
+          nord = [
+            "292d3e"
+            "f07178"
+            "c3e88d"
+            "ffcb6b"
+            "82aaff"
+            "c792ea"
+            "89ddff"
+            "d0d0d0"
+            "434758"
+            "ff8b92"
+            "ddffa7"
+            "ffe585"
+            "9cc4ff"
+            "e1acff"
+            "a3f7ff"
+            "ffffff"
+          ];
+        };
+      in getAttrFromPath [cfg.console.colors.scheme] knownSchemes);
     };
 
     services.interception-tools = mkIf cfg.input.keyboard.capstoesc.enable {
@@ -168,19 +190,64 @@ in {
       #udevmonConfig = '''';
     };
 
-    hardware.steam-hardware.enable = cfg.steam.hardware;
-    networking.firewall = mkIf cfg.steam.remoteplay {
-      allowedTCPPorts = [ 27036 ];
-      allowedUDPPortRanges = [ { from = 27031; to = 27036; } ];
-    };
+    #hardware.steam-hardware.enable = cfg.steam.hardware;
+
+    networking.firewall = mkMerge [
+      (mkIf cfg.steam.remoteplay {
+        allowedTCPPorts = [ 27036 ];
+        allowedUDPPortRanges = [ { from = 27031; to = 27036; } ];
+      })
+      (mkIf (cfg.gnome.enable && cfg.gnome.gsconnect) {
+        allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+        allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+      })
+    ];
 
     boot.extraModulePackages = optional
       cfg.v4l2loopback.enable config.boot.kernelPackages.v4l2loopback;
-    boot.kernelModules = optional
-      cfg.v4l2loopback.enable "v4l2loopback";
+    boot.kernelModules = [ "uinput" ]
+      ++ optional cfg.v4l2loopback.enable "v4l2loopback";
     boot.extraModprobeConfig = optionalString
       cfg.v4l2loopback.enable ''
       options v4l2loopback ${optionalString cfg.v4l2loopback.exclusiveCaps "exclusive_caps=1"} card_label=Video_Loopback
     '';
+
+    services.xserver = mkIf cfg.gnome.enable {
+      enable = true;
+      displayManager.gdm.enable = true;
+      desktopManager.gnome.enable = true;
+    };
+    services.gnome  = mkIf cfg.gnome.enable {
+      core-os-services.enable = true;
+      core-shell.enable = true;
+      core-utilities.enable = false;
+
+      gnome-online-accounts.enable = false;
+      chrome-gnome-shell.enable = false;
+      gnome-initial-setup.enable = false;
+      gnome-remote-desktop.enable = false;
+      gnome-user-share.enable = false;
+      rygel.enable = false;
+      sushi.enable = true;
+    };
+    services.packagekit.enable = false;
+    services.telepathy.enable = false;
+
+    services.udev.packages = optional cfg.gnome.enable (with pkgs; [
+      gnome3.gnome-settings-daemon
+    ]);
+
+    environment.gnome.excludePackages = optional cfg.gnome.enable (with pkgs; [
+      gnome-tour
+      orca
+    ]);
+
+    programs.evince.enable = cfg.gnome.enable;
+    programs.file-roller.enable = cfg.gnome.enable;
+    programs.gnome-disks.enable = cfg.gnome.enable;
+    programs.gnome-terminal.enable = cfg.gnome.enable;
+    programs.seahorse.enable = cfg.gnome.enable;
+
+    qt5.platformTheme = mkIf cfg.gnome.enable "gnome";
   };
 }
