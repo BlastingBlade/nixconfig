@@ -36,21 +36,19 @@
     let
       system = "x86_64-linux";
 
-      pkgs = import nixpkgs {
+      mkPkgs = nonfree: import nixpkgs {
         inherit system;
         overlays = [ emacs-overlay.overlay ];
-      };
-
-      pkgsNonfree = import nixpkgs {
-        inherit system;
-        overlays = [ emacs-overlay.overlay ];
-        config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [
+        config.allowUnfreePredicate = lib.optionals nonfree (pkg: builtins.elem (lib.getName pkg) [
           "steam"
           "steam-original"
           "steam-runtime"
           "discord"
-        ];
+        ]);
       };
+
+      pkgs = mkPkgs false;
+      pkgsNonfree = mkPkgs true;
 
       lib = nixpkgs.lib;
 
@@ -58,10 +56,12 @@
 
       nixosModules = import ./nixosModules;
 
+      hmModules = import ./hmModules { inherit pkgs inputs pkgsNonfree; };
+
       homeManagerConfigurations = {
         blasting = home-manager.lib.homeManagerConfiguration {
           stateVersion = "21.05";
-          configuration = import ./home/blasting.nix { inherit pkgs lib nix-doom-emacs; };
+          configuration = self.hmModules.desktop;
           system = system;
           homeDirectory = "/home/blasting";
           username = "blasting";
@@ -114,7 +114,7 @@
             home-manager.nixosModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.blasting = import ./home/blasting.server.nix;
+              home-manager.users.blasting = self.hmModules.server;
             }
           ];
           specialArgs = { inherit inputs; };
@@ -127,7 +127,7 @@
             home-manager.nixosModules.home-manager {
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
-              home-manager.users.blasting = import ./home/blasting.server.nix;
+              home-manager.users.blasting = self.hmModules.server;
             }
           ];
           specialArgs = { inherit inputs; };
