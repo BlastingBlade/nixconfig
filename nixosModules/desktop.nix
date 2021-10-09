@@ -191,6 +191,8 @@ in {
       #udevmonConfig = '''';
     };
 
+    services.flatpak.enable = true;
+
     #hardware.steam-hardware.enable = cfg.steam.hardware;
 
     networking.firewall = mkMerge [
