@@ -1,4 +1,4 @@
-{ pkgs, inputs, pkgsNonfree, ... }:
+{ pkgs, inputs, ... }:
 
 { config, lib, ... }:
 
@@ -9,7 +9,6 @@
     ./browser.nix
     (import ./doom-emacs.nix pkgs)
     ./email.nix
-    (import ./gaming.nix pkgsNonfree)
     ./pass.nix
     ./texlive.nix
     ./theming.nix

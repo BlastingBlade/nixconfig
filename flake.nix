@@ -36,19 +36,10 @@
     let
       system = "x86_64-linux";
 
-      mkPkgs = nonfree: import nixpkgs {
+      pkgs = import nixpkgs {
         inherit system;
         overlays = [ emacs-overlay.overlay ];
-        config.allowUnfreePredicate = lib.optionals nonfree (pkg: builtins.elem (lib.getName pkg) [
-          "steam"
-          "steam-original"
-          "steam-runtime"
-          "discord"
-        ]);
       };
-
-      pkgs = mkPkgs false;
-      pkgsNonfree = mkPkgs true;
 
       lib = nixpkgs.lib;
 
@@ -56,7 +47,7 @@
 
       nixosModules = import ./nixosModules;
 
-      hmModules = import ./hmModules { inherit pkgs inputs pkgsNonfree; };
+      hmModules = import ./hmModules { inherit pkgs inputs; };
 
       homeManagerConfigurations = {
         blasting = home-manager.lib.homeManagerConfiguration {

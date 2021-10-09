@@ -76,13 +76,6 @@ in {
 
     libsecret.enable = mkEnableDefault "Enable the libsecret secret manager";
 
-    steam = {
-      # FIXME: all steam features in nixos require nonfree pkgs.steam
-      # hardware = mkEnableOption "hardware.steam-hardware.enable";
-      remoteplay = mkEnableOption "Firewall rules to open RemorePlay";
-      # dedicatedServers
-    };
-
     v4l2loopback = {
       enable = mkEnableOption "Enable a v4l2 loopback device";
       exclusiveCaps = mkEnableDefault "Enable 'exclusive_caps' option (chrome compat)";
@@ -193,18 +186,10 @@ in {
 
     services.flatpak.enable = true;
 
-    #hardware.steam-hardware.enable = cfg.steam.hardware;
-
-    networking.firewall = mkMerge [
-      (mkIf cfg.steam.remoteplay {
-        allowedTCPPorts = [ 27036 ];
-        allowedUDPPortRanges = [ { from = 27031; to = 27036; } ];
-      })
-      (mkIf (cfg.gnome.enable && cfg.gnome.gsconnect) {
-        allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
-        allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
-      })
-    ];
+    networking.firewall = mkIf (cfg.gnome.enable && cfg.gnome.gsconnect) {
+      allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+      allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+    };
 
     boot.extraModulePackages = optional
       cfg.v4l2loopback.enable config.boot.kernelPackages.v4l2loopback;

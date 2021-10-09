@@ -1,4 +1,4 @@
-{ pkgs, inputs, pkgsNonfree, ... }@header:
+{ pkgs, inputs, ... }@header:
 
 {
   common  = import ./common.nix header;
