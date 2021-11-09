@@ -16,16 +16,6 @@
     };
 
     emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
-
-    nix-doom-emacs = {
-      url = "github:vlaci/nix-doom-emacs/develop";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.emacs-overlay.follows = "emacs-overlay";
-      inputs.straight = {
-        url = "github:raxod502/straight.el";
-        flake = false;
-       };
-    };
   };
 
   outputs =

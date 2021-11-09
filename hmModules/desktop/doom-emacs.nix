@@ -1,16 +1,18 @@
 { lib, pkgs, ... }:
 
 {
-  programs.doom-emacs = {
+  home.sessionPath = [ "~/.config/emacs/bin" ];
+
+  programs.emacs = {
     enable = true;
-    # emacsPackagesOverlay
-    doomPrivateDir = ./doom.d;
-    extraPackages = [ pkgs.mu ];
-    extraConfig = ''
-      (setq sendmail-program "${pkgs.msmtp}/bin/msmtp"
-            mu4e-mu-binary "${pkgs.mu}/bin/mu")
-    '';
+    extraPackages = (epkgs: [
+      pkgs.emacs-all-the-icons-fonts
+      pkgs.binutils
+      pkgs.mu
+      epkgs.vterm
+    ]);
   };
+
   services.emacs = {
     enable = true;
     client = {
@@ -23,14 +25,38 @@
 
   home.packages = with pkgs; [
     # doom depends
+    git
+    (ripgrep.override { withPCRE2 = true; })
+    gnutls
+    fd
+    imagemagick
+
     fira
     fira-code
     fira-code-symbols
-    emacs-all-the-icons-fonts
+
     # :checkers spell
     (pkgs.aspellWithDicts (ds: with ds; [
       en en-computers en-science
     ]))
+    # :checkers grammer
+    languagetool
+    # :ui treemacs
+    python3
+    # :editor format
+    asmfmt
+    clang-tools # clang-fomat
+    cmake-format
+    htmlTidy
+    nixfmt
+    rustfmt
+    black # python
+    shfmt
+    # :tools editorconfig
+    editorconfig-core-c
+    # :tools lookup
+    sqlite
+    wordnet
     # :lang org +hugo
     hugo
     # :lang latex
@@ -43,12 +69,8 @@
     # :lang javascript
     nodePackages.javascript-typescript-langserver
     # :lang rust
-    rustfmt
     rust-analyzer
     cargo
     rustc
-
-    fd
-    (ripgrep.override { withPCRE2 = true; })
   ];
 }
