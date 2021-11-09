@@ -102,8 +102,8 @@ in {
         gnome.nautilus
       ] ++ (with pkgs.gnomeExtensions; [
         appindicator
-        adwaita-theme-switcher
         espresso
+        sound-output-device-chooser
       ] ++ optional cfg.gnome.gsconnect pkgs.gnomeExtensions.gsconnect))
     ;
 
