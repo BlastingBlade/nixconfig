@@ -1,15 +1,22 @@
 {
+  description = "Some nonsense that I'm using on my computers";
+
   inputs = {
     nixpkgs = { url = "github:NixOS/nixpkgs/nixos-21.05"; };
+
+    utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
+
     nixos-hardware = { url = "github:nixos/nixos-hardware"; };
+
+    impermanence = { url = "github:nix-community/impermanence"; };
+
     home-manager = {
       url = "github:nix-community/home-manager/release-21.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    emacs-overlay = {
-      url = "github:nix-community/emacs-overlay";
-    };
+    emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
+
     nix-doom-emacs = {
       url = "github:vlaci/nix-doom-emacs/develop";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -19,110 +26,91 @@
         flake = false;
        };
     };
-
-    impermanence = { url = "github:nix-community/impermanence"; };
   };
 
   outputs =
     { self
     , nixpkgs
-    , nixos-hardware
-    , home-manager
-    , emacs-overlay
-    , nix-doom-emacs
-    , impermanence
+    , utils
     , ...
     } @ inputs:
-    let
-      system = "x86_64-linux";
+    utils.lib.mkFlake
+      {
+        inherit self inputs;
 
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [ emacs-overlay.overlay ];
-      };
+        nixosModules = utils.lib.exportModules [
+          ./nixosModules/common.nix
+          ./nixosModules/flakes.nix
+          ./nixosModules/blasting.nix
+          ./nixosModules/desktop.nix
+        ];
 
-      lib = nixpkgs.lib;
+        hostModules = utils.lib.exportModules [
+          ./hosts/oldbook.nix
+          ./hosts/planeptune.nix
+          ./hosts/histoire.nix
+        ];
 
-    in {
+        hmModules = utils.lib.exportModules [
+          ./hmModules/common.nix
+          ./hmModules/desktop
+          ./hmModules/server.nix
+        ];
 
-      nixosModules = import ./nixosModules;
+        # Channels are generated from nixpkgs style inputs (ie those with .legacyPackages)
 
-      hmModules = import ./hmModules { inherit pkgs inputs; };
+        channels.nixpkgs.overlayBuilder = channels: [
+          inputs.utils.overlay
+          inputs.emacs-overlay.overlay
+          (final: prev: {
+            emacs = prev.emacsPgtkGcc;
+          })
+        ];
 
-      homeManagerConfigurations = {
-        blasting = home-manager.lib.homeManagerConfiguration {
-          stateVersion = "21.05";
-          configuration = self.hmModules.desktop;
-          system = system;
-          homeDirectory = "/home/blasting";
-          username = "blasting";
-        };
-      };
+        hostDefaults = {
+          channelName = "nixpkgs";
+          system = "x86_64-linux";
+          modules = [
+            self.nixosModules.common
+            self.nixosModules.flakes
+            self.nixosModules.blasting
 
-      nixosConfigurations = let
-        hosts = import ./hosts;
-        commonModule = ({ ... }:
-          {
-            imports = [ inputs.self.nixosModules.common ];
-
-            time.timeZone = "America/New_York";
-            blasting.common = {
-              user = {
-                username = "blasting";
-                realname = "Henry Fiantaca";
-                sshAuthorizedKeys = [
-                  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICmKlAu/Fgvt5TYZgBV3aZdoTQ+SfI/x+0zUEsyK9ET1 hfiantaca@gmail.com"
-                ];
-                passwordHash =
-                  "$6$jTnBoykh2C$c3xA1b0jHixv6WeFIQCmQ0Vc1l.N.l5Uc0t7/d.WPbkd8vERnWjZv8ZgGPNshPr3cME.RXGiOe5oi5hm2ym/q1";
+            inputs.home-manager.nixosModule
+            {
+              home-manager = {
+                useGlobalPkgs = true;
+                #useUserPackages = true;
+                extraSpecialArgs = {
+                  inherit (inputs) self nix-doom-emacs;
+                };
               };
-            };
+            }
+          ];
+          specialArgs = { inherit (inputs) self nixos-hardware impermanence home-manager; };
+        };
 
-            nix.package = pkgs.nixUnstable;
-            nix.extraOptions = ''
-              experimental-features = nix-command flakes
-            '';
-            system.configurationRevision = lib.mkIf (self ? rev) self.rev;
-            nix.registry.nixpkgs.flake = inputs.nixpkgs;
-            nix.registry.self.flake = inputs.self;
-            environment.systemPackages = with pkgs; [ git gnumake ];
-          });
-      in {
-        oldbook = lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            commonModule
+        hosts = let
+          droidcam = { ... }: { programs.droidcam.enable = true; };
+        in {
+          # Personal laptop, Dell Inspiron 3543 A10
+          oldbook.modules = [
             self.nixosModules.desktop
-            hosts.oldbook
+            self.hostModules.oldbook
+            droidcam
+            { home-manager.users.blasting.imports = [ self.hmModules.desktop ]; }
           ];
-          specialArgs = { inherit inputs; };
-        };
-        planeptune = lib.nixosSystem {
-          system = "aarch64-linux";
-          modules = [
-            commonModule
-            hosts.planeptune
-            home-manager.nixosModules.home-manager {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.blasting = self.hmModules.server;
-            }
+          # Local server, Raspberry Pi 4B 1GiB
+          planeptune.system = "aarch64-linux";
+          planeptune.modules = [
+            self.hostModules.planeptune
+            { home-manager.users.blasting.imports = [ self.hmModules.server ]; }
           ];
-          specialArgs = { inherit inputs; };
-        };
-        histoire = lib.nixosSystem {
-          system = "x86_64-linux";
-          modules = [
-            commonModule
-            hosts.histoire
-            home-manager.nixosModules.home-manager {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.users.blasting = self.hmModules.server;
-            }
+
+          # Online VPS, Linode
+          histoire.modules = [
+            self.hostModules.histoire
+            { home-manager.users.blasting.imports = [ self.hmModules.server ]; }
           ];
-          specialArgs = { inherit inputs; };
         };
       };
-    };
 }

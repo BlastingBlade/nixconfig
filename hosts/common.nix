@@ -1,4 +1,4 @@
-{ config, pkgs, lib, modulesPath, inputs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   time.timeZone = "America/New_York";

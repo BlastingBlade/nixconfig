@@ -1,8 +1,8 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, nixos-hardware, ... }:
 
 {
   imports = [
-    inputs.nixos-hardware.nixosModules.raspberry-pi-4
+    nixos-hardware.nixosModules.raspberry-pi-4
   ];
 
   hardware.enableRedistributableFirmware = true;

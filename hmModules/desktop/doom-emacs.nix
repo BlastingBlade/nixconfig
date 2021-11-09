@@ -1,10 +1,8 @@
-pkgs:
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 {
   programs.doom-emacs = {
     enable = true;
-    emacsPackage = pkgs.emacsPgtkGcc;
     # emacsPackagesOverlay
     doomPrivateDir = ./doom.d;
     extraPackages = [ pkgs.mu ];
@@ -21,7 +19,7 @@ pkgs:
     };
   };
 
-  fonts.fontconfig.enable = true;
+  fonts.fontconfig.enable = lib.mkForce true;
 
   home.packages = with pkgs; [
     # doom depends

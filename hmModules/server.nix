@@ -1,9 +1,7 @@
-{ pkgs, inputs, ... }:
-
-{ config, lib, ... }:
+{ config, lib, pkgs, self, ... }:
 
 {
-  imports = [ inputs.self.hmModules.common ];
+  imports = [ self.hmModules.common ];
 
   home.packages = with pkgs; [
     tmux

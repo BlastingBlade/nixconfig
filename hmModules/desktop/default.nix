@@ -1,13 +1,11 @@
-{ pkgs, inputs, ... }:
-
-{ config, lib, ... }:
+{ config, lib, pkgs, self, nix-doom-emacs, ... }:
 
 {
   imports = [
-    inputs.self.hmModules.common
-    inputs.nix-doom-emacs.hmModule
+    self.hmModules.common
+    nix-doom-emacs.hmModule
     ./browser.nix
-    (import ./doom-emacs.nix pkgs)
+    ./doom-emacs.nix
     ./email.nix
     ./pass.nix
     ./texlive.nix

@@ -1,10 +1,10 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, lib, pkgs, nixos-hardware, impermanence, ... }:
 
 {
   imports = [
-    inputs.nixos-hardware.nixosModules.common-gpu-nvidia-disable
-    inputs.nixos-hardware.nixosModules.dell-latitude-3480
-    inputs.impermanence.nixosModules.impermanence
+    nixos-hardware.nixosModules.common-gpu-nvidia-disable
+    nixos-hardware.nixosModules.dell-latitude-3480
+    impermanence.nixosModules.impermanence
   ];
 
   networking.hostName = "oldbook";

@@ -1,8 +1,8 @@
-{ config, pkgs, lib, inputs, ... }:
+{ config, pkgs, lib, impermanence, ... }:
 
 {
   imports = [
-    inputs.impermanence.nixosModules.impermanence
+    impermanence.nixosModules.impermanence
   ];
 
   networking.hostName = "histoire";
