@@ -86,6 +86,10 @@ in {
       enable = mkEnableDefault "Enable the GNOME desktop (gnome, gdm, apps, ...)";
       gsconnect = mkEnableDefault "Enable thee GSConnect extension";
     };
+
+    qmk = {
+      enable = mkEnableDefault "Enable udev rules for QMK devices";
+    };
   };
 
   config = {
@@ -221,9 +225,12 @@ in {
     services.packagekit.enable = false;
     services.telepathy.enable = false;
 
-    services.udev.packages = optional cfg.gnome.enable (with pkgs; [
+    services.udev.packages = (optional cfg.gnome.enable (with pkgs; [
       gnome3.gnome-settings-daemon
-    ]);
+    ]))
+    ++ (optional cfg.qmk.enable (with pkgs; [
+      qmk-udev-rules
+    ]));
 
     environment.gnome.excludePackages = optional cfg.gnome.enable (with pkgs; [
       gnome-tour
