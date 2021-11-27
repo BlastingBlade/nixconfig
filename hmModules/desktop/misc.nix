@@ -16,8 +16,6 @@
   programs.obs-studio = {
     enable = true;
     plugins = with pkgs; [
-      obs-gstreamer
-      obs-v4l2sink
       obs-wlrobs
     ];
   };

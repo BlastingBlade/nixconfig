@@ -5,6 +5,7 @@
 
   programs.emacs = {
     enable = true;
+    package = pkgs.emacsPgtkGcc;
     extraPackages = (epkgs: [
       pkgs.emacs-all-the-icons-fonts
       pkgs.binutils

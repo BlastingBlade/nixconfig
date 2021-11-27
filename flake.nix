@@ -2,7 +2,7 @@
   description = "Some nonsense that I'm using on my computers";
 
   inputs = {
-    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-21.05"; };
+    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
 
     utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
 
@@ -11,11 +11,16 @@
     impermanence = { url = "github:nix-community/impermanence"; };
 
     home-manager = {
-      url = "github:nix-community/home-manager/release-21.05";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
+
+    nixpkgs-wayland  = {
+      url = "github:nix-community/nixpkgs-wayland";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -47,14 +52,10 @@
           ./hmModules/server.nix
         ];
 
-        # Channels are generated from nixpkgs style inputs (ie those with .legacyPackages)
-
-        channels.nixpkgs.overlayBuilder = channels: [
+        sharedOverlays = [
           inputs.utils.overlay
+          inputs.nixpkgs-wayland.overlay
           inputs.emacs-overlay.overlay
-          (final: prev: {
-            emacs = prev.emacsPgtkGcc;
-          })
         ];
 
         hostDefaults = {
@@ -69,7 +70,7 @@
             {
               home-manager = {
                 useGlobalPkgs = true;
-                #useUserPackages = true;
+                useUserPackages = true;
                 extraSpecialArgs = {
                   inherit (inputs) self nix-doom-emacs;
                 };
