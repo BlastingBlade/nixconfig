@@ -29,7 +29,20 @@ in {
       };
     };
 
-    input.keyboard.capstoesc.enable = mkEnableDefault "Use Interception Tools to remap capslock to ctrl/esc";
+    input.keyboard.capstoesc = {
+      enable = mkEnableDefault "Use Interception Tools to remap capslock to ctrl/esc";
+      events = mkOption {
+        type = with types; nullOr str;
+        description = "DEVICE: EVENTS to send to caps2esc";
+        default = "EV_KEY: [KEY_CAPSLOCK, KEY_ESC]";
+      };
+      devices = mkOption {
+        type = with types; listOf str;
+        description = "DEVICE: LINK to send to caps2esc";
+        default = [];
+        example = literalExample "[ \"/dev/input/by-path/platform-i8042-serio-0-event-kbd\" ]";
+      };
+    };
 
     devices = {
       adb = {
@@ -183,9 +196,33 @@ in {
 
     services.interception-tools = mkIf cfg.input.keyboard.capstoesc.enable {
       enable = true;
-      #caps2esc config is defaut :D
-      #plugins = [];
-      #udevmonConfig = '''';
+      plugins = [ pkgs.interception-tools-plugins.caps2esc ];
+      udevmonConfig = let
+        intercept_bin = "${pkgs.interception-tools}/bin/intercept";
+        caps2esc_bin = "${pkgs.interception-tools-plugins.caps2esc}/bin/caps2esc";
+        uinput_bin = "${pkgs.interception-tools}/bin/uinput";
+
+        eventFmt = event:
+          ''
+            - JOB: ${intercept_bin} -g $DEVNODE | ${caps2esc_bin} | ${uinput_bin} -d $DEVNODE
+              DEVICE:
+                EVENTS:
+                  ${event}
+          '';
+        eventRule = optional
+          (cfg.input.keyboard.capstoesc.events != null)
+          (eventFmt cfg.input.keyboard.capstoesc.events);
+
+        deviceFmt = device:
+          ''
+            - JOB: ${intercept_bin} -g $DEVNODE | ${caps2esc_bin} | ${uinput_bin} -d $DEVNODE
+              DEVICE:
+                LINK: ${device}
+          '';
+        deviceRules =
+          (map deviceFmt cfg.input.keyboard.capstoesc.devices);
+
+      in concatStringsSep "\n" (flatten [ eventRule deviceRules ]);
     };
 
     services.flatpak.enable = true;

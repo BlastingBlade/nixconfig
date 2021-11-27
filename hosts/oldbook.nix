@@ -25,6 +25,12 @@
   blasting.desktop = {
     devices.adb.enable = true;
     v4l2loopback.enable = true;
+    input.keyboard.capstoesc = {
+      events = null;
+      devices = [
+        "/dev/input/by-path/platform-i8042-serio-0-event-kbd"
+      ];
+    };
   };
 
   boot = {
