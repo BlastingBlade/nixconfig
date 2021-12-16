@@ -2,7 +2,8 @@
   description = "Some nonsense that I'm using on my computers";
 
   inputs = {
-    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
+    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-21.11"; };
+    nixpkgs-unstable = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
 
     utils = { url = "github:gytis-ivaskevicius/flake-utils-plus"; };
 
@@ -16,11 +17,6 @@
     };
 
     emacs-overlay = { url = "github:nix-community/emacs-overlay"; };
-
-    nixpkgs-wayland  = {
-      url = "github:nix-community/nixpkgs-wayland";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
@@ -54,8 +50,19 @@
 
         sharedOverlays = [
           inputs.utils.overlay
-          inputs.nixpkgs-wayland.overlay
           inputs.emacs-overlay.overlay
+          (final: prev: {
+            xsel = final.wl-clipboard-x11;
+            xclip = final.wl-clipboard-x11;
+          })
+        ];
+
+        channels.nixpkgs.overlaysBuilder = channels: [
+          (final: prev: {
+            inherit (channels.nixpkgs-unstable)
+              wl-clipboard-x11
+            ;
+          })
         ];
 
         hostDefaults = {
@@ -72,7 +79,7 @@
                 useGlobalPkgs = true;
                 useUserPackages = true;
                 extraSpecialArgs = {
-                  inherit (inputs) self nix-doom-emacs;
+                  inherit (inputs) self;
                 };
               };
             }
