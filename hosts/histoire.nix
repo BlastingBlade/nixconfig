@@ -26,9 +26,17 @@
     enable = true;
     virtualHosts = {
       "hfiantaca.com" = {
+        default = true;
         addSSL = true;
         enableACME = true;
-        root = "/srv/www/hfiantaca.com";
+        locations = {
+          "/" = {
+            root = "/srv/www/hfiantaca.com";
+          };
+          "/quotes" = {
+            proxyPass = "http://localhost:3000";
+          };
+        };
       };
     };
   };
