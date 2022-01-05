@@ -48,20 +48,18 @@
           ./hmModules/server.nix
         ];
 
-        sharedOverlays = [
+        channels.nixpkgs.overlaysBuilder = channels: [
+          self.overlay
           inputs.utils.overlay
           inputs.emacs-overlay.overlay
-          (final: prev: {
-            xsel = final.wl-clipboard-x11;
-            xclip = final.wl-clipboard-x11;
-          })
-        ];
-
-        channels.nixpkgs.overlaysBuilder = channels: [
           (final: prev: {
             inherit (channels.nixpkgs-unstable)
               wl-clipboard-x11
             ;
+          })
+          (final: prev: {
+            xsel = final.wl-clipboard-x11;
+            xclip = final.wl-clipboard-x11;
           })
         ];
 
@@ -110,5 +108,8 @@
             { home-manager.users.blasting.imports = [ self.hmModules.server ]; }
           ];
         };
+
+        overlay = import ./pkgs { inherit inputs; };
+        overlays = utils.lib.exportOverlays { inherit (self) inputs pkgs; };
       };
 }

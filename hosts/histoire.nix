@@ -45,6 +45,18 @@
     email = "hfiantaca@gmail.com";
   };
 
+  systemd.services.quote-server = {
+    enable = true;
+    description = "Node program for serving quotes.";
+    unitConfig = {
+      Type = "simple";
+    };
+    serviceConfig = {
+      ExecStart = "${pkgs.quote-server}/bin/quote-server 3000";
+    };
+    wantedBy = [ "multi-user.target" ];
+  };
+
   blasting.common.mdns.enable = false;
 
   #FIXME grub cannot find grub.cfg on boot
