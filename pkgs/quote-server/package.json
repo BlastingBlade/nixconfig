@@ -1,7 +1,7 @@
 {
     "name": "quote-server",
     "description": "Serve a random quote every refresh",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "Henry Fiantaca <hfiantaca@gmail.com>",
     "license": "MIT",
     "private": true,

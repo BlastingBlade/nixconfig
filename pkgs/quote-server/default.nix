@@ -2,13 +2,13 @@
 
 prev.mkYarnPackage rec {
   pname = "quote-server";
-  version = "1.0.0";
+  version = "1.0.1";
 
   src = final.fetchFromGitHub {
     owner = "BlastingBlade";
     repo = "quote-server";
     rev = "${version}";
-    sha256 = "sha256-YCkBgMKnBHjsm5nvQlO/h+dWK90gu9q1pQM8hT3cGgc=";
+    sha256 = "sha256-TZPVJjQ8vpwloazKvkqgfEdAlU3sBpSyGFaalTWQPCw=";
   };
 
   yarnFlags = [ "--offline" "--production" ];
