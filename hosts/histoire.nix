@@ -57,7 +57,7 @@
     wantedBy = [ "multi-user.target" ];
   };
 
-  blasting.common.mdns.enable = false;
+  blasting.services.mdns.enable = false;
 
   #FIXME grub cannot find grub.cfg on boot
   boot = {

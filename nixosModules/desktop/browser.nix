@@ -1,4 +1,6 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, self, ... }:
+
+with lib;
 
 let
   myFirefox = pkgs.wrapFirefox pkgs.firefox-unwrapped {
@@ -34,15 +36,10 @@ let
     };
     forceWayland = true;
   };
-
-in
-{
-  home.packages = [
+in {
+  environment.systemPackages = with pkgs; [
     myFirefox
     pkgs.gnome.epiphany
+    pkgs.qutebrowser
   ];
-
-  programs.qutebrowser = {
-    enable = true;
-  };
 }

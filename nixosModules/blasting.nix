@@ -2,7 +2,7 @@
 
 {
   time.timeZone = "America/New_York";
-  blasting.common = {
+  blasting = {
     user = {
       username = "blasting";
       realname = "Henry Fiantaca";

@@ -1,21 +1,28 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, self, ... }:
 
 with lib;
 
 let
-  cfg = config.blasting.common;
-  mkEnableDefault = desc: mkEnableOption desc // { default = true; };
+  inherit (self.lib) mkEnableDefault;
+  cfg = config.blasting;
 in
 {
-  options.blasting.common = {
+  options.blasting = {
     user = {
       username = mkOption {
         type = types.str;
         description = "Username of the main user";
+        default = "blasting";
       };
       realname = mkOption {
         type = types.str;
         description = "Real name of the main user";
+        default = "Henry Fiantaca";
+      };
+      email = mkOption {
+        type = types.str;
+        description = "Email of the user";
+        default = "hfiantaca@gmail.com";
       };
       sshAuthorizedKeys = mkOption {
         type = with types; listOf str;
@@ -28,13 +35,11 @@ in
       };
     };
 
-    mdns.enable = mkEnableDefault "Enable mDNS and zeroconf via avahi";
-
-    podman.enable = mkEnableDefault "Enable podman container hypervisor";
-
-    ssh.enable = mkEnableDefault "Enable SSH";
-
-    vim.enable = mkEnableDefault "Install vim as EDITOR";
+    services = {
+      mdns.enable = mkEnableDefault "Enable mDNS and zeroconf via avahi";
+      ssh.enable = mkEnableDefault "Enable SSH";
+      podman.enable = mkEnableOption "Enable podman container hypervisor";
+    };
   };
 
   config = {
@@ -47,13 +52,50 @@ in
       openssh.authorizedKeys.keys = cfg.user.sshAuthorizedKeys;
     };
 
-    environment.systemPackages = optional cfg.vim.enable pkgs.vim;
-    environment.variables = mkIf cfg.vim.enable {
+    home-manager.users."${cfg.user.username}" = {
+      programs.home-manager.enable = true;
+
+      programs.bash = {
+        enable = true;
+        historyControl = [ "erasedups" "ignorespace" ];
+        shellAliases = {
+          ll = "ls -l";
+        };
+      };
+
+      programs.git = {
+        enable = true;
+        userName  = cfg.user.realname;
+        userEmail = cfg.user.email;
+        extraConfig = {
+          init.defaultBranch = "main";
+        };
+      };
+
+      programs.gpg.enable = true;
+      services.gpg-agent.enable = true;
+
+      programs.man = {
+        enable = true;
+        generateCaches = true;
+      };
+    };
+
+    environment.systemPackages = with pkgs; [
+      vim
+      git
+      (ripgrep.override { withPCRE2 = true; })
+      fd
+      file
+      python3
+    ];
+
+    environment.variables = {
       EDITOR = "vim";
       VISUAL = "vim";
     };
 
-    services.avahi = mkIf cfg.mdns.enable {
+    services.avahi = mkIf cfg.services.mdns.enable {
       enable = true;
       nssmdns = true;
       publish = {
@@ -62,7 +104,7 @@ in
       };
     };
 
-    services.openssh = mkIf cfg.ssh.enable {
+    services.openssh = mkIf cfg.services.ssh.enable {
       enable = true;
       hostKeys = mkIf (hasAttrByPath [ "persistence" "/nix/persist" ] config.environment) [
         {
@@ -79,6 +121,6 @@ in
       openFirewall = true;
     };
 
-    virtualisation.podman.enable = cfg.podman.enable;
+    virtualisation.podman.enable = cfg.services.podman.enable;
   };
 }

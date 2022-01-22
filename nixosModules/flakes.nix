@@ -2,10 +2,6 @@
 
 with lib;
 
-let
-  cfg = config.blasting.common;
-  mkEnableDefault = desc: mkEnableOption desc // { default = true; };
-in
 {
   nix.package = pkgs.nixUnstable;
   nix.extraOptions = ''
