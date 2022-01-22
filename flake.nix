@@ -94,11 +94,6 @@
             self.modules.desktop
             self.hostModules.oldbook
           ];
-          # Local server, Raspberry Pi 4B 1GiB
-          planeptune.system = "aarch64-linux";
-          planeptune.modules = [
-            self.hostModules.planeptune
-          ];
 
           # Online VPS, Linode
           histoire.modules = [
