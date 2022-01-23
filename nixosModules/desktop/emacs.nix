@@ -10,10 +10,9 @@ in {
 
     programs.emacs = {
       enable = true;
-      package = pkgs.emacsPgtkGcc;
+      package = pkgs.emacsPgtk;
       extraPackages = (epkgs: [
         pkgs.emacs-all-the-icons-fonts
-        pkgs.binutils
         pkgs.mu
         epkgs.vterm
       ]);
