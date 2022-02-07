@@ -4,9 +4,9 @@ with lib;
 
 let
   inherit (self.lib) mkEnableDefault;
-  cfg = config.blasting.desktop.interception-tools;
+  cfg = config.blasting.desktops.interception-tools;
 in {
-  options.blasting.desktop.interception-tools = {
+  options.blasting.desktops.interception-tools = {
     caps2esc = {
       enable = mkEnableDefault "Use Interception Tools to remap capslock to ctrl/esc";
       events = mkOption {

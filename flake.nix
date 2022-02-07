@@ -39,7 +39,7 @@
           ./nixosModules/common.nix
           ./nixosModules/flakes.nix
           ./nixosModules/blasting.nix
-          ./nixosModules/desktop
+          ./nixosModules/desktops
         ];
 
         hostModules = flake-utils-plus.lib.exportModules [
@@ -91,7 +91,7 @@
         hosts = {
           # Personal laptop, Dell Inspiron 3543 A10
           oldbook.modules = [
-            self.modules.desktop
+            self.modules.desktops.river
             self.hostModules.oldbook
           ];
 

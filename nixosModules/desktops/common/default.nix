@@ -4,7 +4,7 @@ with lib;
 
 let
   inherit (self.lib) mkEnableDefault;
-  cfg = config.blasting.desktop;
+  cfg = config.blasting.desktops;
   cfg' = config.blasting;
 in {
 
@@ -12,12 +12,11 @@ in {
     ./browser.nix
     ./emacs.nix
     ./email.nix
-    ./gnome.nix
     ./interception-tools.nix
     ./utilities.nix
   ];
 
-  options.blasting.desktop = {
+  options.blasting.desktops = {
     networkmanager = {
       enable = mkEnableDefault "Configure with NetworkManager";
       #wireless = mkEnable "Enable wireless";
@@ -54,6 +53,7 @@ in {
       noto-fonts-extra
       liberation_ttf
       libertine
+      font-awesome-ttf
 
       emacs-all-the-icons-fonts
     ];
@@ -88,9 +88,14 @@ in {
 
       gtk = {
         enable = true;
-        font ={
+        font = {
           name = "Cantarell";
+          package = pkgs.cantarell-fonts;
           size = 10;
+        };
+        theme = {
+          package = pkgs.gnome.gnome-themes-extra;
+          name = "Adwaita-dark";
         };
         gtk3.extraConfig = { gtk-application-prefer-dark-theme = 1; };
       };

@@ -4,27 +4,34 @@ with lib;
 
 let
   inherit (self.lib) mkEnableDefault;
-  cfg = config.blasting.desktop.gnome;
+  cfg = config.blasting.desktops.gnome;
 in {
-  options.blasting.desktop.gnome = {
+
+  imports = [
+    self.modules.desktops.common
+  ];
+
+  options.blasting.desktops.gnome = {
     enable = mkEnableDefault "Enable the GNOME desktop (gnome, gdm, apps, ...)";
     gsconnect = mkEnableDefault "Enable thee GSConnect extension";
   };
 
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs; [
-        gnome.baobab
-        gnome.eog
-        gnome.gedit
-        gnome.gnome-calculator
-        gnome.gnome-screenshot
-        gnome.gnome-system-monitor
-        gnome.nautilus
-      ] ++ (with pkgs.gnomeExtensions; [
-        appindicator
-        espresso
-        sound-output-device-chooser
-      ] ++ optional cfg.gsconnect pkgs.gnomeExtensions.gsconnect);
+      gnome.baobab
+      gnome.eog
+      gnome.gedit
+      gnome.gnome-calculator
+      gnome.gnome-screenshot
+      gnome.gnome-system-monitor
+      gnome.nautilus
+    ]
+    ++ (with pkgs.gnomeExtensions; [
+      appindicator
+      espresso
+      sound-output-device-chooser
+    ]
+    ++ optional cfg.gsconnect pkgs.gnomeExtensions.gsconnect);
 
     networking.firewall = mkIf cfg.gsconnect {
       allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];

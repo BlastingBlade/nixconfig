@@ -1,0 +1,121 @@
+* {
+    border: none;
+    border-radius: 0;
+    font-family: Canterell, FontAwesome, sans-serif;
+    font-size: 13px;
+}
+
+window#waybar {
+    background: #292D3E;
+    color: #EEFFFF;
+    border-radius: 6px;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #tags {
+    margin-left: 0;
+}
+
+#tags button {
+    padding: 0 5px;
+}
+
+#tags button:hover {
+    background: #82AAFF;
+}
+
+#tags button.focused {
+    background: #7986E7;
+}
+
+#tags button.urgent {
+    color: #FF5370;
+}
+
+#clock,
+#tray,
+#network,
+#disk,
+#backlight,
+#pulseaudio,
+#idle_inhibitor,
+#battery {
+    padding: 0 10px;
+}
+
+#clock {
+    background: #1C1F2B;
+    border-radius: 8px;
+}
+
+#tray {
+    background: #1C1F2B;
+}
+#tray > .passive {
+    -gtk-icon-effect: dim;
+}
+#tray > .needs-attention {
+    -gtk-icon-effect: highlight;
+    background: #FF5370;
+}
+
+#network.disconnected {
+    color: #676E95;
+}
+#network.wifi,
+#network.ethernet {
+    color: #82AAFF;
+}
+
+#disk.critical {
+    color: #ff5370;
+}
+#disk.low {
+    color: #F78C6C;
+}
+#disk.good {
+    color: #C3E88D;
+}
+
+#idle_inhibitor.deactivated {
+    color: #676E95;
+}
+#idle_inhibitor.activated {
+    color: #82AAFF;
+}
+
+#pulseaudio {
+    color: #89DDFF;
+}
+#pulseaudio.muted {
+    color: #676E95;
+}
+
+#battery.charging.full {
+    color: #1c1f2b;
+    background: #c3e88d;
+    border-radius: 8px;
+}
+#battery.full {
+    color: #c3e88d;
+}
+#battery.warning {
+    color: #ff5370;
+}
+#battery.critical {
+    color: #ff5370;
+    animation-name: batt-crit;
+    animation-duration: 1s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+@keyframes batt-crit {
+    from {
+        background: #1c1f2b;
+    }
+    to {
+        background: #ff5370;
+        color: #EEFFFF;
+    }
+}

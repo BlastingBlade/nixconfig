@@ -22,7 +22,7 @@
     driSupport32Bit = true;
   };
 
-  blasting.desktop = {
+  blasting.desktops = {
     adb.enable = true;
     v4l2loopback.enable = true;
     interception-tools.caps2esc = {
