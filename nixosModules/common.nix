@@ -43,6 +43,17 @@ in
   };
 
   config = {
+
+    nix = {
+      gc = {
+        automatic = true;
+        options = "--delete-older-than 14d";
+      };
+      optimise = {
+        automatic = true;
+      };
+    };
+
     users.users."${cfg.user.username}" = {
       isNormalUser = true;
       extraGroups = [

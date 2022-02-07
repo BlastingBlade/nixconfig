@@ -22,6 +22,8 @@
     sysstat
   ];
 
+  security.acme.acceptTerms = true;
+  security.acme.defaults.email = "hfiantaca@gmail.com";
   services.nginx = {
     enable = true;
     virtualHosts = {
@@ -39,10 +41,6 @@
         };
       };
     };
-  };
-  security.acme = {
-    acceptTerms = true;
-    email = "hfiantaca@gmail.com";
   };
 
   systemd.services.quote-server = {

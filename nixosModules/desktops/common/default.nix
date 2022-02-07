@@ -32,7 +32,7 @@ in {
   config = {
     environment.systemPackages = with pkgs; [
       pkgs.pulsemixer
-      pkgs.gnome.libsecret
+      pkgs.libsecret
     ];
 
     users.users."${cfg'.user.username}".extraGroups = [

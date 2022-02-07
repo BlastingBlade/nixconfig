@@ -2,8 +2,7 @@
   description = "Some nonsense that I'm using on my computers";
 
   inputs = {
-    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-21.11"; };
-    nixpkgs-unstable = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
+    nixpkgs = { url = "github:NixOS/nixpkgs/nixos-unstable"; };
 
     flake-utils = { url = "github:numtide/flake-utils"; };
     flake-utils-plus = {
@@ -52,13 +51,6 @@
           self.overlay
           inputs.flake-utils-plus.overlay
           inputs.emacs-overlay.overlay
-          (final: prev: {
-            inherit (channels.nixpkgs-unstable)
-              wl-clipboard-x11;
-
-            xsel = final.wl-clipboard-x11;
-            xclip = final.wl-clipboard-x11;
-          })
         ];
 
         hostDefaults = {
