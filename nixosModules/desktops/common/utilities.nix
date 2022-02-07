@@ -9,6 +9,12 @@ let
     exts.pass-otp
     exts.pass-update
   ]);
+  obsExt = pkgs.wrapOBS {
+    plugins = with pkgs.obs-studio-plugins; [
+      obs-websocket
+      wlrobs
+    ];
+  };
 in {
   environment.systemPackages = with pkgs; [
     passExt
@@ -21,7 +27,7 @@ in {
     python39Packages.pygments
     graphviz
 
-    obs-studio
+    obsExt
 
     freecad
     blender
