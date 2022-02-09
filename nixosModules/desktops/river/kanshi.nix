@@ -4,13 +4,11 @@
   profiles = {
     "standalone" = {
       # TODO exec = enable screensaver
-      outputs = [
-        {
-          criteria = "eDP-1";
-          mode = "1366x768@60Hz";
-          position = "0,0";
-        }
-      ];
+      outputs = [{
+        criteria = "eDP-1";
+        mode = "1366x768@60Hz";
+        position = "0,0";
+      }];
     };
     "docked" = {
       # TODO exec = disable screensaver

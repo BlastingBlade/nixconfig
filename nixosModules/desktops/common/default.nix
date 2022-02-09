@@ -26,21 +26,16 @@ in {
 
     adb.enable = mkEnableOption "Enable the Android Debugging Bridge";
     qmk.enable = mkEnableDefault "Enable udev rules for QMK devices";
-    v4l2loopback.enable = mkEnableOption "Enable the v4l2loopback kernel module";
+    v4l2loopback.enable =
+      mkEnableOption "Enable the v4l2loopback kernel module";
   };
 
   config = {
-    environment.systemPackages = with pkgs; [
-      pkgs.pulsemixer
-      pkgs.libsecret
-    ];
+    environment.systemPackages = with pkgs; [ pkgs.pulsemixer pkgs.libsecret ];
 
-    users.users."${cfg'.user.username}".extraGroups = [
-      "video"
-      "dialout"
-    ]
-    ++ optional cfg.networkmanager.enable "networkmanager"
-    ++ optional cfg.adb.enable "adbusers";
+    users.users."${cfg'.user.username}".extraGroups = [ "video" "dialout" ]
+      ++ optional cfg.networkmanager.enable "networkmanager"
+      ++ optional cfg.adb.enable "adbusers";
 
     fonts.fonts = with pkgs; [
       fira
@@ -62,15 +57,12 @@ in {
 
     programs.adb.enable = cfg.adb.enable;
 
-    services.udev.packages = optional cfg.qmk.enable
-      pkgs.qmk-udev-rules;
+    services.udev.packages = optional cfg.qmk.enable pkgs.qmk-udev-rules;
 
     networking.networkmanager = mkIf cfg.networkmanager.enable {
       enable = true;
       dhcp = "internal";
-      wifi = {
-        powersave = cfg.networkmanager.powersaving;
-      };
+      wifi = { powersave = cfg.networkmanager.powersaving; };
     };
 
     home-manager.users."${cfg'.user.username}" = {
@@ -148,8 +140,8 @@ in {
       in schemes.nord);
     };
 
-    boot.extraModulePackages = optional
-      cfg.v4l2loopback.enable config.boot.kernelPackages.v4l2loopback;
+    boot.extraModulePackages =
+      optional cfg.v4l2loopback.enable config.boot.kernelPackages.v4l2loopback;
     boot.kernelModules = [ "uinput" ]
       ++ optional cfg.v4l2loopback.enable "v4l2loopback";
   };

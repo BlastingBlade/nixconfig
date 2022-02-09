@@ -8,92 +8,95 @@ let
   cfg' = config.blasting;
 in {
 
-  imports = [
-    self.modules.desktops.common
-  ];
+  imports = [ self.modules.desktops.common ];
 
   options.blasting.desktops.river = {
-    enable = mkEnableDefault "Enable the River desktop (riverwm, gdm, waybar, ...)";
-    kdeconnect = mkEnableDefault "Enable KDE Connect indicator and necessary firewall rules";
+    enable =
+      mkEnableDefault "Enable the River desktop (riverwm, gdm, waybar, ...)";
+    kdeconnect = mkEnableDefault
+      "Enable KDE Connect indicator and necessary firewall rules";
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      river
+    environment.systemPackages = with pkgs;
+      [
+        river
 
-      glib # gsettings
-      gtk3.out # gtk-launch
-      hicolor-icon-theme
-      shared-mime-info
-      xdg-user-dirs
-      qt5.qtwayland # QT_QPA_PPLATFORM=wayland-egl
+        glib # gsettings
+        gtk3.out # gtk-launch
+        hicolor-icon-theme
+        shared-mime-info
+        xdg-user-dirs
+        qt5.qtwayland # QT_QPA_PPLATFORM=wayland-egl
 
-      oguri
-      wlsunset
-      wl-clipboard
-      wl-clipboard-x11
-      pamixer
-      playerctl
+        oguri
+        wlsunset
+        wl-clipboard
+        wl-clipboard-x11
+        pamixer
+        playerctl
 
-      grim
-      wev
+        grim
+        wev
 
-      foot
-      fuzzel
+        foot
+        fuzzel
 
-      gnome.nautilus
-      gnome.gnome-system-monitor
-    ]
-    ++ (optional cfg.kdeconnect pkgs.kdeconnect);
+        gnome.nautilus
+        gnome.gnome-system-monitor
+      ] ++ (optional cfg.kdeconnect pkgs.kdeconnect);
 
-    home-manager.users."${cfg'.user.username}" = let
-      cfg'h = config.home-manager.users."${cfg'.user.username}";
-    in {
-      # TODO expose configuration options for hosts
-      xdg.configFile = {
-        "river/init".source =
-          pkgs.writeShellScript "river_init"
-            ''
-              POLKIT_GNOME=${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1
-              RIVERCTL=${pkgs.river}/bin/riverctl
-              RIVERTILE=${pkgs.river}/bin/rivertile
-              PAMIXER=${pkgs.pamixer}/bin/pamixer
-              PLAYERCTL=${pkgs.playerctl}/bin/playerctl
-              LIGHT=${pkgs.light}/bin/light
-              FOOT=${pkgs.foot}/bin/foot
-              FUZZEL=${pkgs.fuzzel}/bin/fuzzel
+    home-manager.users."${cfg'.user.username}" =
+      let cfg'h = config.home-manager.users."${cfg'.user.username}";
+      in {
+        # TODO expose configuration options for hosts
+        xdg.configFile = {
+          "river/init".source = pkgs.writeShellScript "river_init" ''
+            POLKIT_GNOME=${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1
+            RIVERCTL=${pkgs.river}/bin/riverctl
+            RIVERTILE=${pkgs.river}/bin/rivertile
+            PAMIXER=${pkgs.pamixer}/bin/pamixer
+            PLAYERCTL=${pkgs.playerctl}/bin/playerctl
+            LIGHT=${pkgs.light}/bin/light
+            FOOT=${pkgs.foot}/bin/foot
+            FUZZEL=${pkgs.fuzzel}/bin/fuzzel
 
-              ${lib.readFile ./init.sh}
-            '';
-        "oguri/config".text = ''
-          [output *]
-          image=${cfg'h.xdg.configHome}/oguri/wallpaper
-          filter=nearest
-          scaling-mode=fill
-          anchor=center
-        '';
-        "oguri/wallpaper".source =
-          ./wallpaper;
-      };
-
-      programs.waybar = import ./waybar.nix;
-      services.kanshi = import ./kanshi.nix;
-      services.wlsunset = {
-        enable = true;
-        latitude = "35.2";
-        longitude = "-80.8";
-      };
-      systemd.user.services.oguri = {
-        Unit = {
-          Description = "A very nice animated wallpaper daemon for Wayland compositors.";
-          PartOf = [ "graphical-session.target" ];
+            ${lib.readFile ./init.sh}
+          '';
+          "oguri/config".text = ''
+            [output *]
+            image=${cfg'h.xdg.configHome}/oguri/wallpaper
+            filter=nearest
+            scaling-mode=fill
+            anchor=center
+          '';
+          "oguri/wallpaper".source = ./wallpaper;
+          "xdg-desktop-portal-wlr/river".text = ''
+            [screencast]
+            output_name=
+            max_fps=60
+            chooser_type=simple
+            chooser_cmd=slurp -f %o -or
+          '';
         };
-        Service = {
-          ExecStart = "${pkgs.oguri}/bin/oguri";
+
+        programs.waybar = import ./waybar.nix;
+        services.kanshi = import ./kanshi.nix;
+        services.wlsunset = {
+          enable = true;
+          latitude = "35.2";
+          longitude = "-80.8";
         };
-        Install = { WantedBy = [ "graphical-session.target" ]; };
+        systemd.user.services.oguri = {
+          Unit = {
+            Description =
+              "A very nice animated wallpaper daemon for Wayland compositors.";
+            PartOf = [ "graphical-session.target" ];
+          };
+          Service = { ExecStart = "${pkgs.oguri}/bin/oguri"; };
+          Install = { WantedBy = [ "graphical-session.target" ]; };
+        };
       };
-    };
 
     programs.light.enable = true;
     programs.evince.enable = true;
@@ -102,8 +105,14 @@ in {
     programs.seahorse.enable = true;
 
     networking.firewall = mkIf cfg.kdeconnect {
-      allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
-      allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+      allowedTCPPortRanges = [{
+        from = 1714;
+        to = 1764;
+      }];
+      allowedUDPPortRanges = [{
+        from = 1714;
+        to = 1764;
+      }];
     };
 
     programs.sway.enable = true;
@@ -112,23 +121,22 @@ in {
       settings = {
         terminal.vt = 2;
         default_session = let
-          startriver = pkgs.writeShellScript "startriver"
-            ''
-              export XDG_SESSION_TYPE=wayland
-              export XDG_SESSION_DESKTOP=river
-              export XDG_CURRENT_DESKTOP=river
+          startriver = pkgs.writeShellScript "startriver" ''
+            export XDG_SESSION_TYPE=wayland
+            export XDG_SESSION_DESKTOP=river
+            export XDG_CURRENT_DESKTOP=river
 
-              export MOZ_DBUS_REMOTE=1
-              export MOZ_ENABLE_WAYLAND=1
-              export CLUTTER_BACKEND=wayland
-              export QT_QPA_PLATFORM=wayland-egl
-              export QT_WAYLAND_FORCE_DPI=physical
-              export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
-              export SDL_VIDEODRIVER=wayland
-              export _JAVA_AWT_WM_NONREPARENTING=1
+            export MOZ_DBUS_REMOTE=1
+            export MOZ_ENABLE_WAYLAND=1
+            export CLUTTER_BACKEND=wayland
+            export QT_QPA_PLATFORM=wayland-egl
+            export QT_WAYLAND_FORCE_DPI=physical
+            export QT_WAYLAND_DISABLE_WINDOWDECORATION=1
+            export SDL_VIDEODRIVER=wayland
+            export _JAVA_AWT_WM_NONREPARENTING=1
 
-              river $@ | systemd-cat --identifier=river
-            '';
+            river $@ | systemd-cat --identifier=river
+          '';
         in {
           command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd ${startriver}";
         };
@@ -137,14 +145,14 @@ in {
 
     #FIXME
     services.xserver.libinput = let
-      pointer = { natScroll ? false}:
-        { accelProfile = "flat";
-          naturalScrolling = natScroll;
-          scrollMethod = "twofinger";
-        };
+      pointer = { natScroll ? false }: {
+        accelProfile = "flat";
+        naturalScrolling = natScroll;
+        scrollMethod = "twofinger";
+      };
     in {
       enable = false;
-      mouse = pointer {};
+      mouse = pointer { };
       touchpad = pointer { natScroll = true; };
     };
 
@@ -153,14 +161,10 @@ in {
     services.power-profiles-daemon.enable = true;
     services.gvfs.enable = true;
 
-    services.gnome = {
-      gnome-keyring.enable = true;
-    };
+    services.gnome = { gnome-keyring.enable = true; };
 
     xdg.portal.enable = true;
-    xdg.portal.extraPortals = [
-      pkgs.xdg-desktop-portal-gtk
-      pkgs.xdg-desktop-portal-wlr
-    ];
+    xdg.portal.extraPortals =
+      [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr ];
   };
 }

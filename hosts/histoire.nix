@@ -1,18 +1,14 @@
 { config, pkgs, lib, impermanence, ... }:
 
 {
-  imports = [
-    impermanence.nixosModules.impermanence
-  ];
+  imports = [ impermanence.nixosModules.impermanence ];
 
   networking.hostName = "histoire";
 
   networking = {
     useDHCP = false;
     usePredictableInterfaceNames = false;
-    interfaces.eth0 = {
-      useDHCP = true;
-    };
+    interfaces.eth0 = { useDHCP = true; };
     firewall.allowedTCPPorts = [ 80 443 ];
   };
 
@@ -32,12 +28,8 @@
         addSSL = true;
         enableACME = true;
         locations = {
-          "/" = {
-            root = "/srv/www/hfiantaca.com";
-          };
-          "/quotes" = {
-            proxyPass = "http://localhost:3000";
-          };
+          "/" = { root = "/srv/www/hfiantaca.com"; };
+          "/quotes" = { proxyPass = "http://localhost:3000"; };
         };
       };
     };
@@ -46,9 +38,7 @@
   systemd.services.quote-server = {
     enable = true;
     description = "Node program for serving quotes.";
-    unitConfig = {
-      Type = "simple";
-    };
+    unitConfig = { Type = "simple"; };
     serviceConfig = {
       ExecStart = "${pkgs.quote-server}/bin/quote-server 3000";
     };
@@ -91,11 +81,7 @@
       "sd_mod"
     ];
     initrd = {
-      kernelModules = [
-        "virtio_balloon"
-        "virtio_console"
-        "virtio_rng"
-      ];
+      kernelModules = [ "virtio_balloon" "virtio_console" "virtio_rng" ];
       postDeviceCommands = ''
         hwclock -s
       '';
@@ -120,18 +106,15 @@
     };
   };
 
-  swapDevices = [
-    { device = "/dev/disk/by-label/swap"; }
-  ];
+  swapDevices = [{ device = "/dev/disk/by-label/swap"; }];
 
   environment.persistence."/nix/persist" = {
     directories = [
-      "/srv"       # service data
-      "/var/lib"   # system service persistent data
-      "/var/log"   # the place that journald dumps it logs to
-      "/home"      # user dirs
+      "/srv"
+      "/var/lib"
+      "/var/log"
+      "/home"
     ];
   };
-  environment.etc."machine-id".source
-    = "/nix/persist/etc/machine-id";
+  environment.etc."machine-id".source = "/nix/persist/etc/machine-id";
 }

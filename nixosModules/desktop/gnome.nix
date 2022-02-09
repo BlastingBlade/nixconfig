@@ -7,9 +7,7 @@ let
   cfg = config.blasting.desktops.gnome;
 in {
 
-  imports = [
-    self.modules.desktops.common
-  ];
+  imports = [ self.modules.desktops.common ];
 
   options.blasting.desktops.gnome = {
     enable = mkEnableDefault "Enable the GNOME desktop (gnome, gdm, apps, ...)";
@@ -17,25 +15,28 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      gnome.baobab
-      gnome.eog
-      gnome.gedit
-      gnome.gnome-calculator
-      gnome.gnome-screenshot
-      gnome.gnome-system-monitor
-      gnome.nautilus
-    ]
-    ++ (with pkgs.gnomeExtensions; [
-      appindicator
-      espresso
-      sound-output-device-chooser
-    ]
-    ++ optional cfg.gsconnect pkgs.gnomeExtensions.gsconnect);
+    environment.systemPackages = with pkgs;
+      [
+        gnome.baobab
+        gnome.eog
+        gnome.gedit
+        gnome.gnome-calculator
+        gnome.gnome-screenshot
+        gnome.gnome-system-monitor
+        gnome.nautilus
+      ] ++ (with pkgs.gnomeExtensions;
+        [ appindicator espresso sound-output-device-chooser ]
+        ++ optional cfg.gsconnect pkgs.gnomeExtensions.gsconnect);
 
     networking.firewall = mkIf cfg.gsconnect {
-      allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
-      allowedUDPPortRanges = [ { from = 1714; to = 1764; } ];
+      allowedTCPPortRanges = [{
+        from = 1714;
+        to = 1764;
+      }];
+      allowedUDPPortRanges = [{
+        from = 1714;
+        to = 1764;
+      }];
     };
 
     services.xserver = {
@@ -60,14 +61,9 @@ in {
     services.packagekit.enable = false;
     services.telepathy.enable = false;
 
-    services.udev.packages = with pkgs; [
-      gnome3.gnome-settings-daemon
-    ];
+    services.udev.packages = with pkgs; [ gnome3.gnome-settings-daemon ];
 
-    environment.gnome.excludePackages = with pkgs; [
-      gnome-tour
-      orca
-    ];
+    environment.gnome.excludePackages = with pkgs; [ gnome-tour orca ];
 
     programs.evince.enable = true;
     programs.file-roller.enable = true;

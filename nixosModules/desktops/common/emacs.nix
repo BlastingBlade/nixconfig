@@ -2,8 +2,7 @@
 
 with lib;
 
-let
-  cfg' = config.blasting;
+let cfg' = config.blasting;
 in {
   home-manager.users."${cfg'.user.username}" = {
     home.sessionPath = [ "~/.config/emacs/bin" ];
@@ -11,11 +10,8 @@ in {
     programs.emacs = {
       enable = true;
       package = pkgs.emacsPgtk;
-      extraPackages = (epkgs: [
-        pkgs.emacs-all-the-icons-fonts
-        pkgs.mu
-        epkgs.vterm
-      ]);
+      extraPackages =
+        (epkgs: [ pkgs.emacs-all-the-icons-fonts pkgs.mu epkgs.vterm ]);
     };
 
     services.emacs = {
@@ -29,9 +25,7 @@ in {
     # TODO: Move into project devShells
     home.packages = with pkgs; [
       # :checkers spell
-      (pkgs.aspellWithDicts (ds: with ds; [
-        en en-computers en-science
-      ]))
+      (pkgs.aspellWithDicts (ds: with ds; [ en en-computers en-science ]))
       # :checkers grammer
       languagetool
       # :editor format

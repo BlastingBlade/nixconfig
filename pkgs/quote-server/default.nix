@@ -17,7 +17,8 @@ prev.mkYarnPackage rec {
   yarnNix = ./yarn.nix;
 
   meta = with prev.lib; {
-    description = "Host application to display rotating quotes on an eletric sign";
+    description =
+      "Host application to display rotating quotes on an eletric sign";
     homepage = "https://github.com/BlastingBlade/quote-server";
     platforms = platforms.unix;
   };

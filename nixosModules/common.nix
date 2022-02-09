@@ -5,8 +5,7 @@ with lib;
 let
   inherit (self.lib) mkEnableDefault;
   cfg = config.blasting;
-in
-{
+in {
   options.blasting = {
     user = {
       username = mkOption {
@@ -27,7 +26,7 @@ in
       sshAuthorizedKeys = mkOption {
         type = with types; listOf str;
         description = "Authorized SSH keys";
-        example = literalExample "[ \"ssh-rsa somefactor user@host\" ]";
+        example = literalExample ''[ "ssh-rsa somefactor user@host" ]'';
       };
       passwordHash = mkOption {
         type = types.str;
@@ -49,16 +48,12 @@ in
         automatic = true;
         options = "--delete-older-than 14d";
       };
-      optimise = {
-        automatic = true;
-      };
+      optimise = { automatic = true; };
     };
 
     users.users."${cfg.user.username}" = {
       isNormalUser = true;
-      extraGroups = [
-        "wheel"
-      ];
+      extraGroups = [ "wheel" ];
       initialHashedPassword = cfg.user.passwordHash;
       openssh.authorizedKeys.keys = cfg.user.sshAuthorizedKeys;
     };
@@ -76,11 +71,9 @@ in
 
       programs.git = {
         enable = true;
-        userName  = cfg.user.realname;
+        userName = cfg.user.realname;
         userEmail = cfg.user.email;
-        extraConfig = {
-          init.defaultBranch = "main";
-        };
+        extraConfig = { init.defaultBranch = "main"; };
       };
 
       programs.gpg.enable = true;
@@ -117,17 +110,18 @@ in
 
     services.openssh = mkIf cfg.services.ssh.enable {
       enable = true;
-      hostKeys = mkIf (hasAttrByPath [ "persistence" "/nix/persist" ] config.environment) [
-        {
-          path = "/nix/persist/ssh/ssh_host_ed25519_key";
-          type = "ed25519";
-        }
-        {
-          path = "/nix/persist/ssh/ssh_host_rsa_key";
-          type = "rsa";
-          bits = 4096;
-        }
-      ];
+      hostKeys = mkIf
+        (hasAttrByPath [ "persistence" "/nix/persist" ] config.environment) [
+          {
+            path = "/nix/persist/ssh/ssh_host_ed25519_key";
+            type = "ed25519";
+          }
+          {
+            path = "/nix/persist/ssh/ssh_host_rsa_key";
+            type = "rsa";
+            bits = 4096;
+          }
+        ];
       passwordAuthentication = false;
       openFirewall = true;
     };

@@ -8,12 +8,8 @@
     output = [ "eDP-1" ];
     margin = "0px 6px 6px";
 
-    modules-left = [
-      "river/tags"
-    ];
-    modules-center = [
-      "clock"
-    ];
+    modules-left = [ "river/tags" ];
+    modules-center = [ "clock" ];
     modules-right = [
       "tray"
       "network#wifi"
@@ -64,9 +60,7 @@
         };
         tooltip = false;
       };
-      "backlight" = {
-        format = " {percent}%";
-      };
+      "backlight" = { format = " {percent}%"; };
       "idle_inhibitor" = {
         format = "{icon}";
         format-icons = {

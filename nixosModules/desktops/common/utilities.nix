@@ -4,16 +4,10 @@ with lib;
 
 let
   cfg' = config.blasting;
-  passExt = pkgs.pass.withExtensions (exts: [
-    exts.pass-audit
-    exts.pass-otp
-    exts.pass-update
-  ]);
+  passExt = pkgs.pass.withExtensions
+    (exts: [ exts.pass-audit exts.pass-otp exts.pass-update ]);
   obsExt = pkgs.wrapOBS {
-    plugins = with pkgs.obs-studio-plugins; [
-      obs-websocket
-      wlrobs
-    ];
+    plugins = with pkgs.obs-studio-plugins; [ obs-websocket wlrobs ];
   };
 in {
   environment.systemPackages = with pkgs; [
@@ -33,7 +27,6 @@ in {
     blender
     prusa-slicer
   ];
-
 
   environment.variables = {
     PASSWORD_STORE_DIR = "$HOME/.local/share/pass";
