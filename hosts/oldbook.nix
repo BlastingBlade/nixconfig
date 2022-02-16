@@ -11,13 +11,14 @@
 
   hardware.enableRedistributableFirmware = true;
 
-  hardware.bluetooth.enable = true;
+  #hardware.bluetooth.enable = true;
 
   hardware.opengl = {
     enable = true;
     driSupport = true;
     driSupport32Bit = true;
   };
+  environment.sessionVariables = { "VDPAU_DRIVER" = "va_gl"; };
 
   blasting.desktops = {
     adb.enable = true;
