@@ -7,6 +7,15 @@ systemctl --user restart wlsunset
 systemctl --user restart kanshi
 systemctl --user restart oguri
 
+for input in ${TRACKPADS[@]}; do
+    ${RIVERCTL} input "$input" click-method clickfinger
+    ${RIVERCTL} input "$input" tap enabled
+    ${RIVERCTL} input "$input" drag enabled
+    ${RIVERCTL} input "$input" middle-emulation enabled
+    ${RIVERCTL} input "$input" natural-scroll enabled
+    ${RIVERCTL} input "$input" scroll-method two-finger
+done
+
 mod="Mod4"
 
 ${RIVERCTL} map normal $mod+Shift Return spawn ${FOOT}

@@ -61,6 +61,8 @@ in {
             FOOT=${pkgs.foot}/bin/foot
             FUZZEL=${pkgs.fuzzel}/bin/fuzzel
 
+            TRACKPADS=(1739:10629:Synaptics_s3203)
+
             ${lib.readFile ./init.sh}
           '';
           "oguri/config".text = ''
@@ -141,19 +143,6 @@ in {
           command = "${pkgs.greetd.tuigreet}/bin/tuigreet --cmd ${startriver}";
         };
       };
-    };
-
-    #FIXME
-    services.xserver.libinput = let
-      pointer = { natScroll ? false }: {
-        accelProfile = "flat";
-        naturalScrolling = natScroll;
-        scrollMethod = "twofinger";
-      };
-    in {
-      enable = false;
-      mouse = pointer { };
-      touchpad = pointer { natScroll = true; };
     };
 
     programs.dconf.enable = true;
