@@ -13,10 +13,6 @@ gc:
 	sudo nix-collect-garbage --delete-older-than 7d
 
 rebuild:
-	sudo nixos-rebuild switch --flake '.#'
-
-homemanager:
-	nix build '.#homeManagerConfigurations.blasting.activationPackage'
-	./result/activate
+	sudo nixos-rebuild boot --flake '.#'
 
 # end
