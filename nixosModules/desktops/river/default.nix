@@ -36,11 +36,13 @@ in {
         pamixer
         playerctl
 
+        slurp
         grim
         wev
 
         foot
         fuzzel
+        gnome.eog
 
         gnome.nautilus
         gnome.gnome-system-monitor
