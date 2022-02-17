@@ -86,6 +86,16 @@ in {
 
         programs.waybar = import ./waybar.nix;
         services.kanshi = import ./kanshi.nix;
+        systemd.user.targets.river-session = {
+          Unit = {
+            Description = "graphical river (wayland) session";
+            Documentation = [ "man:systemd.special(7)" ];
+            BindsTo = [ "graphical-session.target" ];
+            Wants = [ "graphical-session-pre.target" ];
+            After = [ "graphical-session-pre.target" ];
+          };
+        };
+
         services.wlsunset = {
           enable = true;
           latitude = "35.2";

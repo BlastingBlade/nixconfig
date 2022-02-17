@@ -2,10 +2,7 @@ ${POLKIT_GNOME} &
 dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY
 
 # start support services
-systemctl --user restart waybar
-systemctl --user restart wlsunset
-systemctl --user restart kanshi
-systemctl --user restart oguri
+systemctl --user start river-session.target
 
 for input in ${TRACKPADS[@]}; do
     ${RIVERCTL} input "$input" click-method clickfinger
