@@ -22,10 +22,6 @@ in {
     graphviz
 
     obsExt
-
-    freecad
-    blender
-    prusa-slicer
   ];
 
   environment.variables = {
