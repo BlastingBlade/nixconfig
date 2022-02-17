@@ -28,6 +28,7 @@ in {
         shared-mime-info
         xdg-user-dirs
         qt5.qtwayland # QT_QPA_PPLATFORM=wayland-egl
+        libnotify # notify-send
 
         oguri
         wlsunset
@@ -86,6 +87,18 @@ in {
 
         programs.waybar = import ./waybar.nix;
         services.kanshi = import ./kanshi.nix;
+        programs.mako = import ./mako.nix;
+        # TODO: add this to home-manager
+        systemd.user.services.mako = {
+          Unit = {
+            Description =
+              " A lightweight Wayland notification daemon";
+            PartOf = [ "graphical-session.target" ];
+          };
+          Service = { ExecStart = "${pkgs.mako}/bin/mako"; };
+          Install = { WantedBy = [ "graphical-session.target" ]; };
+        };
+
         systemd.user.targets.river-session = {
           Unit = {
             Description = "graphical river (wayland) session";
