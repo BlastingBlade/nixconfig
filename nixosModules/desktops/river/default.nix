@@ -85,20 +85,6 @@ in {
           '';
         };
 
-        programs.waybar = import ./waybar.nix;
-        services.kanshi = import ./kanshi.nix;
-        programs.mako = import ./mako.nix;
-        # TODO: add this to home-manager
-        systemd.user.services.mako = {
-          Unit = {
-            Description =
-              " A lightweight Wayland notification daemon";
-            PartOf = [ "graphical-session.target" ];
-          };
-          Service = { ExecStart = "${pkgs.mako}/bin/mako"; };
-          Install = { WantedBy = [ "graphical-session.target" ]; };
-        };
-
         systemd.user.targets.river-session = {
           Unit = {
             Description = "graphical river (wayland) session";
@@ -109,6 +95,26 @@ in {
           };
         };
 
+        programs.waybar = import ./waybar.nix { inherit pkgs cfg'h; };
+        programs.mako = import ./mako.nix { inherit pkgs cfg'h; };
+        # TODO: add this to home-manager
+        systemd.user.services.mako = {
+          Unit = {
+            Description =
+              " A lightweight Wayland notification daemon";
+            PartOf = [ "graphical-session.target" ];
+          };
+          Service = { ExecStart = "${pkgs.mako}/bin/mako"; };
+          Install = { WantedBy = [ "graphical-session.target" ]; };
+        };
+        services.kanshi = import ./kanshi.nix { inherit pkgs cfg'h; };
+        services.swayidle = import ./swayidle.nix { inherit pkgs cfg'h; };
+        systemd.user.services.swayidle = {
+          # TODO: swayidle should bee started with a login shell
+          Service = { Environment = [ "PATH=/run/current-system/sw/bin" ]; };
+          # TODO: add this option to home-manager
+          Install = { WantedBy = mkForce [ "graphical-session.target" ]; };
+        };
         services.wlsunset = {
           enable = true;
           latitude = "35.2";
