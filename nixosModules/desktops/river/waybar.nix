@@ -19,7 +19,7 @@
       "disk#nix"
       "disk#home"
       "backlight"
-      "idle_inhibitor"
+      "inhibitor"
       "pulseaudio"
       "battery"
     ];
@@ -63,7 +63,8 @@
         tooltip = false;
       };
       "backlight" = { format = " {percent}%"; };
-      "idle_inhibitor" = {
+      "inhibitor" = {
+        what = [ "idle" "handle-lid-switch" ];
         format = "{icon}";
         format-icons = {
           "deactivated" = "";
