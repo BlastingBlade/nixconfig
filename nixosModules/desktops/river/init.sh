@@ -1,5 +1,6 @@
+dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
 ${POLKIT_GNOME} &
-dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY
 
 # start support services
 systemctl --user start river-session.target
