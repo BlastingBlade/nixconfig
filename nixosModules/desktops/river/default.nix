@@ -52,7 +52,6 @@ in {
     home-manager.users."${cfg'.user.username}" =
       let cfg'h = config.home-manager.users."${cfg'.user.username}";
       in {
-        # TODO expose configuration options for hosts
         xdg.configFile = {
           "river/init".source = pkgs.writeShellScript "river_init" ''
             POLKIT_GNOME=${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1
@@ -64,6 +63,7 @@ in {
             FOOT=${pkgs.foot}/bin/foot
             FUZZEL=${pkgs.fuzzel}/bin/fuzzel
 
+            # TODO: dynamically assign libinput configuration
             TRACKPADS=(1739:10629:Synaptics_s3203)
 
             ${lib.readFile ./init.sh}
@@ -76,9 +76,9 @@ in {
             anchor=center
           '';
           "oguri/wallpaper".source = ./wallpaper;
-          "xdg-desktop-portal-wlr/river".text = ''
+          "xdg-desktop-portal-wlr/config".text = ''
             [screencast]
-            output_name=
+            output_name=eDP-1
             max_fps=60
             chooser_type=simple
             chooser_cmd=slurp -f %o -or
@@ -95,39 +95,17 @@ in {
           };
         };
 
+        # TODO: add service definitions to home-manager modules
+        systemd.user.services = import ./user-services.nix { inherit pkgs cfg'h; };
+
         programs.waybar = import ./waybar.nix { inherit pkgs cfg'h; };
         programs.mako = import ./mako.nix { inherit pkgs cfg'h; };
-        # TODO: add this to home-manager
-        systemd.user.services.mako = {
-          Unit = {
-            Description =
-              " A lightweight Wayland notification daemon";
-            PartOf = [ "graphical-session.target" ];
-          };
-          Service = { ExecStart = "${pkgs.mako}/bin/mako"; };
-          Install = { WantedBy = [ "graphical-session.target" ]; };
-        };
         services.kanshi = import ./kanshi.nix { inherit pkgs cfg'h; };
         services.swayidle = import ./swayidle.nix { inherit pkgs cfg'h; };
-        systemd.user.services.swayidle = {
-          # TODO: swayidle should bee started with a login shell
-          Service = { Environment = [ "PATH=/run/current-system/sw/bin" ]; };
-          # TODO: add this option to home-manager
-          Install = { WantedBy = mkForce [ "graphical-session.target" ]; };
-        };
         services.wlsunset = {
           enable = true;
           latitude = "35.2";
           longitude = "-80.8";
-        };
-        systemd.user.services.oguri = {
-          Unit = {
-            Description =
-              "A very nice animated wallpaper daemon for Wayland compositors.";
-            PartOf = [ "graphical-session.target" ];
-          };
-          Service = { ExecStart = "${pkgs.oguri}/bin/oguri"; };
-          Install = { WantedBy = [ "graphical-session.target" ]; };
         };
       };
 
@@ -185,6 +163,8 @@ in {
 
     xdg.portal.enable = true;
     xdg.portal.extraPortals =
-      [ pkgs.xdg-desktop-portal-gtk pkgs.xdg-desktop-portal-wlr ];
+      [
+        (pkgs.xdg-desktop-portal-gtk.override { buildPortalsInGnome = false; })
+        pkgs.xdg-desktop-portal-wlr ];
   };
 }
