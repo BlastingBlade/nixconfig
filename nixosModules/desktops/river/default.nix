@@ -100,6 +100,7 @@ in {
 
         programs.waybar = import ./waybar.nix { inherit pkgs cfg'h; };
         programs.mako = import ./mako.nix { inherit pkgs cfg'h; };
+        programs.foot = import ./foot.nix { inherit pkgs cfg'h; };
         services.kanshi = import ./kanshi.nix { inherit pkgs cfg'h; };
         services.swayidle = import ./swayidle.nix { inherit pkgs cfg'h; };
         services.wlsunset = {
